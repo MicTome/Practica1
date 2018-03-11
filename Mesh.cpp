@@ -243,21 +243,30 @@ Mesh * Mesh::generaPoliespiral(GLdouble verIniX, GLdouble verIniY, GLdouble angI
 
 //-------------------------------------------------------------------------
 
-Mesh * Mesh::generateRectangleTex(GLdouble w, GLdouble h)
+Mesh * Mesh::generateRectangleTex(GLdouble w, GLdouble h, GLuint x, GLuint y)
 {
 	Mesh *m = generateRectangle(w, h);
 	m->texCoords = new dvec2[m->numVertices];
 	m->texCoords[0] = dvec2(0, 0);
-	m->texCoords[1] = dvec2(0, 1);
-	m->texCoords[2] = dvec2(1, 0);
-	m->texCoords[3] = dvec2(1, 1);
+	m->texCoords[1] = dvec2(0, 1+y);
+	m->texCoords[2] = dvec2(1+x, 0);
+	m->texCoords[3] = dvec2(1+x, 1+y);
 	return m;
 }
 
-Mesh * Mesh::texturaContCubo(GLdouble w, GLdouble h){
-	return NULL;
-}
-
-Mesh * Mesh::texturaPiramide(GLdouble w, GLdouble h){
-	return NULL;
+Mesh* Mesh::generateCuboTex(GLdouble w, GLdouble h, GLuint x, GLuint y)
+{
+	Mesh *m = generateContCubo(w);
+	m->texCoords = new dvec2[m->numVertices];
+	m->texCoords[0] = dvec2(0, 0);
+	m->texCoords[1] = dvec2(0, 1 + y);
+	m->texCoords[2] = dvec2(1, 0);
+	m->texCoords[3] = dvec2(1, 1 + y);
+	m->texCoords[4] = dvec2(2, 0);
+	m->texCoords[5] = dvec2(2, 1 + y);
+	m->texCoords[6] = dvec2(3, 0);
+	m->texCoords[7] = dvec2(3, 1 + y);
+	m->texCoords[8] = dvec2(4, 0);
+	m->texCoords[9] = dvec2(4, 1 + y);
+	return m;
 }

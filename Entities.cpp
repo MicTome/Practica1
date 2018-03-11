@@ -257,21 +257,83 @@ void Rectangulo::draw()
 	glColor3f(0.0, 0.0, 1.0);
 	glLineWidth(2);
 	mesh->draw();
-	glLineWidth(1);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
+//-------------------------------------------------------------------------
 
-RectangleTex::RectangleTex(GLdouble w, GLdouble h) : Entity()
+RectanguloTex::RectanguloTex(GLdouble w, GLdouble h, GLuint x, GLuint y) : Entity()
 {
-	mesh = Mesh::generateRectangleTex(w, h);
-	texture.load("..\\Bmps\\Zelda.bmp");
+	mesh = Mesh::generateRectangleTex(w, h, x, y);
+	texture.load("..\\Bmps\\container.bmp");
 }
 //-------------------------------------------------------------------------
 
-void RectangleTex::draw()
+void RectanguloTex::draw()
 {
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
 	texture.bind();
 	mesh->draw();
 	texture.unbind();
 }
+
+//-------------------------------------------------------------------------
+
+CuboTex::CuboTex(GLdouble w, GLdouble h, GLuint x, GLuint y) : Entity()
+{
+    mesh = Mesh::generateRectangleTex(w, h, x, y);
+    contCuboMesh = Mesh::generateCuboTex(w, h, x, y);
+    this->h = h;
+    this->w = w;
+    texture.load("..\\Bmps\\container.bmp");
+}
+
+//-------------------------------------------------------------------------
+
+void CuboTex::draw()
+{
+}
+
+void CuboTex::render(dmat4 const& modelViewMat)
+{
+    setMvM(modelViewMat);
+    
+    //glMatrixMode(GL_MODELVIEW);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glLineWidth(2);
+    glColor3f(0.0, 0.0, 0.0);
+    dmat4 aMat = modelViewMat * modelMat;
+    
+
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+
+    texture.bind();
+    contCuboMesh->draw();
+    texture.unbind();
+
+    aMat = translate(aMat, dvec3(0, -this->h / 2, 0));
+    aMat = rotate(aMat, radians(-90.0), dvec3(1, 0, 0));
+    glLoadMatrixd(value_ptr(aMat));
+    texture.bind();
+    mesh->draw();
+    texture.unbind();
+	
+    aMat = translate(aMat, dvec3(0, 0, this->h / 2));
+    aMat = rotate(aMat, radians(90.0), dvec3(1, 0, 0));
+    
+    aMat = translate(aMat, dvec3(0, this->h, 0));
+	aMat = rotate(aMat, radians(-90.0), dvec3(1, 0, 0));
+    aMat = translate(aMat, dvec3(0, (h / 2 - (sin(radians(45.0)) * this->h) / 2), -(h / 2 - (sin(radians(45.0)) * this->h) / 2)));
+	
+    aMat = rotate(aMat, radians(-45.0), dvec3(1, 0, 0));
+    aMat = rotate(aMat, radians(180.0), dvec3(1, 0, 0));
+    glLoadMatrixd(value_ptr(aMat));
+    texture.bind();
+    mesh->draw();
+    texture.unbind();
+    
+}
+
+//-------------------------------------------------------------------------

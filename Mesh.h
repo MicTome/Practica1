@@ -19,10 +19,8 @@ public:
   static Mesh* generateRectangle(GLdouble w, GLdouble h);
   static Mesh* generaDragon(GLuint numVert);
   static Mesh* generaPoliespiral(GLdouble verIniX, GLdouble verIniY, GLdouble angIni, GLdouble incrAng, GLdouble ladoIni, GLdouble incrLado, GLuint numVert);
-  static Mesh* texturaRectangulo(GLdouble w, GLdouble h);
-  static Mesh* texturaContCubo(GLdouble w, GLdouble h);
-  static Mesh* texturaPiramide(GLdouble w, GLdouble h);
-  static Mesh* generateRectangleTex(GLdouble w, GLdouble h);
+  static Mesh* generateRectangleTex(GLdouble w, GLdouble h, GLuint x, GLuint y);
+  static Mesh* generateCuboTex(GLdouble w, GLdouble h, GLuint x, GLuint y);
   Mesh(void) { };
   ~Mesh(void);
   virtual void draw();

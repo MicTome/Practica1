@@ -121,14 +121,28 @@ public:
 	virtual void draw();
 };
 
-class RectangleTex : public Entity
+class RectanguloTex : public Entity
 {
 public:
-	RectangleTex(GLdouble w, GLdouble h);
-	~RectangleTex() { };
+	RectanguloTex(GLdouble w, GLdouble h, GLuint x, GLuint y);
+	~RectanguloTex() { };
 	virtual void draw();
 };
 
+
+class CuboTex : public Entity
+{
+public:
+	CuboTex(GLdouble w, GLdouble h, GLuint x, GLuint y);
+	CuboTex() { };
+	virtual void draw();
+	virtual void render(glm::dmat4 const& modelViewMat);
+	Mesh* contCuboMesh = nullptr;
+
+private:
+	GLdouble w;
+	GLdouble h;
+};
 
 
 #endif //_H_Entities_H_

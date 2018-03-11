@@ -27,7 +27,9 @@ void Scene::init()
   //objetos.push_back(new Poliespiral(0.0, 0.0, 0.0, 60.0, 0.5, 0.5, 100));
   //objetos.push_back(new Poliespiral(0.0, 0.0, 0.0, 89.5, 0.5, 0.5, 100));
   //objetos.push_back(new Poliespiral(0.0, 0.0, 0.0, 45.0, 1.0, 1.0, 50));
-  objetos.push_back(new RectangleTex(100.0, 100.0));
+  //objetos.push_back(new RectangleTex(100.0, 100.0, 0, 0));
+  objetos.push_back(new CuboTex(100.0, 100.0, 0, 0));
+
 }
 //-------------------------------------------------------------------------
 

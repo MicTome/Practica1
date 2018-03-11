@@ -127,16 +127,16 @@ void specialKey(int key, int x, int y)
 
   switch (key) {
   case GLUT_KEY_RIGHT:
-    camera.pitch(1);   // rotate 1 on the X axis
+    camera.pitch(4);   // rotate 1 on the X axis
     break;
   case GLUT_KEY_LEFT:
-    camera.yaw(1);     // rotate 1 on the Y axis 
+    camera.yaw(4);     // rotate 1 on the Y axis 
     break;
   case GLUT_KEY_UP:
-    camera.roll(1);    // rotate 1 on the Z axis
+    camera.roll(4);    // rotate 1 on the Z axis
     break;
   case GLUT_KEY_DOWN:
-    camera.roll(-1);   // rotate -1 on the Z axis
+    camera.roll(-4);   // rotate -1 on the Z axis
     break;
   default:
     need_redisplay = false;
