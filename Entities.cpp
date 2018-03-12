@@ -287,6 +287,7 @@ CuboTex::CuboTex(GLdouble w, GLdouble h, GLuint x, GLuint y) : Entity()
     this->h = h;
     this->w = w;
     texture.load("..\\Bmps\\container.bmp");
+	intTex.load("..\\Bmps\\chuches.bmp");
 }
 
 //-------------------------------------------------------------------------
@@ -313,12 +314,22 @@ void CuboTex::render(dmat4 const& modelViewMat)
     contCuboMesh->draw();
     texture.unbind();
 
+	glCullFace(GL_BACK);
+	intTex.bind();
+	contCuboMesh->draw();
+	intTex.unbind();
+
     aMat = translate(aMat, dvec3(0, -this->h / 2, 0));
     aMat = rotate(aMat, radians(-90.0), dvec3(1, 0, 0));
     glLoadMatrixd(value_ptr(aMat));
+	glCullFace(GL_FRONT);
     texture.bind();
     mesh->draw();
     texture.unbind();
+	glCullFace(GL_BACK);
+	intTex.bind();
+	mesh->draw();
+	intTex.unbind();
 	
     aMat = translate(aMat, dvec3(0, 0, this->h / 2));
     aMat = rotate(aMat, radians(90.0), dvec3(1, 0, 0));
@@ -330,10 +341,16 @@ void CuboTex::render(dmat4 const& modelViewMat)
     aMat = rotate(aMat, radians(-45.0), dvec3(1, 0, 0));
     aMat = rotate(aMat, radians(180.0), dvec3(1, 0, 0));
     glLoadMatrixd(value_ptr(aMat));
+	glCullFace(GL_FRONT);
     texture.bind();
     mesh->draw();
     texture.unbind();
+	glCullFace(GL_BACK);
+	intTex.bind();
+	mesh->draw();
+	intTex.unbind();
     
+	glDisable(GL_CULL_FACE);
 }
 
 //-------------------------------------------------------------------------

@@ -140,6 +140,7 @@ public:
 	Mesh* contCuboMesh = nullptr;
 
 private:
+	Texture intTex;
 	GLdouble w;
 	GLdouble h;
 };
