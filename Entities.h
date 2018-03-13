@@ -133,7 +133,7 @@ public:
 class CuboTex : public Entity
 {
 public:
-	CuboTex(GLdouble w, GLdouble h, GLuint x, GLuint y);
+	CuboTex(GLdouble w, GLdouble h, GLuint x, GLuint y, GLdouble xt, GLdouble yt, GLdouble zt);
 	CuboTex() { };
 	virtual void draw();
 	virtual void render(glm::dmat4 const& modelViewMat);
@@ -143,7 +143,47 @@ private:
 	Texture intTex;
 	GLdouble w;
 	GLdouble h;
+	GLdouble translateX;
+	GLdouble translateY;
+	GLdouble translateZ;
 };
 
+class TriPyramidTex : public Entity
+{
+public:
+	TriPyramidTex(GLdouble w, GLdouble h);
+	TriPyramidTex() { };
+	virtual void draw();
+};
+
+
+class DiaboloTex : public Entity
+{
+public:
+	DiaboloTex(GLdouble l, GLdouble h, GLdouble xt, GLdouble yt, GLdouble zt);
+	~DiaboloTex() { };
+	virtual void draw();
+	virtual void render(glm::dmat4 const& modelViewMat);
+	virtual void rotateZ();
+private:
+	GLdouble rotationZ;
+	GLdouble translateX;
+	GLdouble translateY;
+	GLdouble translateZ;
+	GLdouble radius;
+	GLdouble height;
+};
+
+class Suelo : public Entity
+{
+public:
+	Suelo(GLdouble w, GLdouble h, GLuint x, GLuint y);
+	virtual void render(glm::dmat4 const& modelViewMat);
+	~Suelo() { };
+	virtual void draw();
+private:
+	GLdouble scaleX;
+	GLdouble scaleY;
+};
 
 #endif //_H_Entities_H_

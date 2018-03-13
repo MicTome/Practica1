@@ -21,6 +21,7 @@ public:
   static Mesh* generaPoliespiral(GLdouble verIniX, GLdouble verIniY, GLdouble angIni, GLdouble incrAng, GLdouble ladoIni, GLdouble incrLado, GLuint numVert);
   static Mesh* generateRectangleTex(GLdouble w, GLdouble h, GLuint x, GLuint y);
   static Mesh* generateCuboTex(GLdouble w, GLdouble h, GLuint x, GLuint y);
+  static Mesh* generateTriPyramidTex(GLdouble r, GLdouble h);
   Mesh(void) { };
   ~Mesh(void);
   virtual void draw();

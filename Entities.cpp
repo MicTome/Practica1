@@ -280,12 +280,15 @@ void RectanguloTex::draw()
 
 //-------------------------------------------------------------------------
 
-CuboTex::CuboTex(GLdouble w, GLdouble h, GLuint x, GLuint y) : Entity()
+CuboTex::CuboTex(GLdouble w, GLdouble h, GLuint x, GLuint y, GLdouble xt, GLdouble yt, GLdouble zt) : Entity()
 {
     mesh = Mesh::generateRectangleTex(w, h, x, y);
     contCuboMesh = Mesh::generateCuboTex(w, h, x, y);
     this->h = h;
     this->w = w;
+	this->translateX = xt;
+	this->translateY = yt;
+	this->translateZ = zt;
     texture.load("..\\Bmps\\container.bmp");
 	intTex.load("..\\Bmps\\chuches.bmp");
 }
@@ -305,8 +308,8 @@ void CuboTex::render(dmat4 const& modelViewMat)
     glLineWidth(2);
     glColor3f(0.0, 0.0, 0.0);
     dmat4 aMat = modelViewMat * modelMat;
-    
-
+	aMat = translate(aMat, dvec3(this->translateX, this->translateY, this->translateZ));
+	glLoadMatrixd(value_ptr(aMat));
     glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
 
@@ -354,3 +357,125 @@ void CuboTex::render(dmat4 const& modelViewMat)
 }
 
 //-------------------------------------------------------------------------
+
+TriPyramidTex::TriPyramidTex(GLdouble l, GLdouble h) : Entity()
+{
+	mesh = Mesh::generateTriPyramidTex(l, h);
+	texture.load("..\\Bmps\\floris.bmp");
+}
+
+//-------------------------------------------------------------------------
+
+void TriPyramidTex::draw()
+{
+}
+
+//-------------------------------------------------------------------------
+
+DiaboloTex::DiaboloTex(GLdouble r, GLdouble h, GLdouble xt, GLdouble yt, GLdouble zt) : Entity()
+{
+	rotationZ = 0;
+	radius = r;
+	height = h;
+	mesh = Mesh::generateTriPyramidTex(r, h);
+	this->translateX = xt;
+	this->translateY = yt;
+	this->translateZ = zt;
+	texture.load("..\\Bmps\\floris.bmp");
+}
+
+//-------------------------------------------------------------------------
+
+void DiaboloTex::draw()
+{
+	glEnable(GL_CULL_FACE);
+
+	glCullFace(GL_FRONT);
+	texture.bind();
+	mesh->draw();
+	texture.unbind();
+
+	glCullFace(GL_BACK);
+	texture.bind();
+	mesh->draw();
+	texture.unbind();
+	glDisable(GL_CULL_FACE);
+}
+
+//-------------------------------------------------------------------------
+
+void DiaboloTex::render(dmat4 const& modelViewMat)
+{
+	setMvM(modelViewMat);
+
+
+	glMatrixMode(GL_MODELVIEW);
+	dmat4 aMat = modelViewMat * modelMat;
+
+	aMat = translate(aMat, dvec3(this->translateX, this->translateY, this->translateZ));
+	glLoadMatrixd(value_ptr(aMat));
+
+	aMat = rotate(aMat, radians(this->rotationZ), dvec3(0, 0, 1));
+	//aMat
+	//glColor3f(0.0, 0.0, 1.0);
+	aMat = translate(aMat, dvec3(0.0, 0.0, -this->height));
+	glLoadMatrixd(value_ptr(aMat));
+	draw();
+
+	//glColor3f(0.0, 1.0, 0.0);
+	aMat = rotate(aMat, radians(180.0), dvec3(0, 0, 1));
+	glLoadMatrixd(value_ptr(aMat));
+	draw();
+
+	//glColor3f(1.0, 0.0, 0.0);
+	aMat = translate(aMat, dvec3(0.0, 0.0, this->height * 2));
+	aMat = rotate(aMat, radians(180.0), dvec3(1, 0, 0));
+	glLoadMatrixd(value_ptr(aMat));
+	draw();
+
+	//glColor3f(0.0, 0.0, 0.0);
+	aMat = rotate(aMat, radians(180.0), dvec3(0, 0, 1));
+	glLoadMatrixd(value_ptr(aMat));
+	draw();
+}
+
+void::DiaboloTex::rotateZ() {
+	this->rotationZ += 10.0;
+}
+
+//-------------------------------------------------------------------------
+
+Suelo::Suelo(GLdouble w, GLdouble h, GLuint x, GLuint y) : Entity()
+{
+	mesh = Mesh::generateRectangleTex(w, h, x, y);
+	this->scaleX = x;
+	this->scaleY = y;
+	texture.load("..\\Bmps\\baldosa1.bmp");
+}
+//-------------------------------------------------------------------------
+
+void Suelo::draw()
+{
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);
+	texture.bind();
+	mesh->draw();
+	texture.unbind();
+	glDisable(GL_CULL_FACE);
+}
+
+//-------------------------------------------------------------------------
+
+void Suelo::render(dmat4 const& modelViewMat)
+{
+	setMvM(modelViewMat);
+
+
+	glMatrixMode(GL_MODELVIEW);
+	dmat4 aMat = modelViewMat * modelMat;
+
+	aMat = scale(aMat, dvec3((GLdouble)this->scaleX, 1.0, (GLdouble)this->scaleY));
+	aMat = rotate(aMat, radians(90.0), dvec3(1, 0, 0));
+	glLoadMatrixd(value_ptr(aMat));
+	draw();
+}

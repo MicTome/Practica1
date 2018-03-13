@@ -270,3 +270,18 @@ Mesh* Mesh::generateCuboTex(GLdouble w, GLdouble h, GLuint x, GLuint y)
 	m->texCoords[9] = dvec2(4, 1 + y);
 	return m;
 }
+
+//-------------------------------------------------------------------------
+
+Mesh* Mesh::generateTriPyramidTex(GLdouble r, GLdouble h)
+{
+	Mesh *m = generateTriPyramid(r, h);
+	m->texCoords = new dvec2[m->numVertices];
+	m->texCoords[0] = dvec2(0.5, 0.5);
+	m->texCoords[1] = dvec2(0, 0);
+	m->texCoords[2] = dvec2(1, 0);
+	m->texCoords[3] = dvec2(0, 0);
+	m->texCoords[4] = dvec2(1, 0);
+	return m;
+
+}
