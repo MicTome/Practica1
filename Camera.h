@@ -44,13 +44,17 @@ public:
   void pitch(GLdouble a); // rotates a degrees on the X axis
   void yaw(GLdouble a);   // rotates a degrees on the Y axis
   void roll(GLdouble a);  // rotates a degrees on the Z axis
+  void rotatePY(GLdouble incrPitch, GLdouble incrYaw);
 
   // projection matrix
   glm::dmat4 const& getProjMat() { return projMat; };
 
   void setSize(GLdouble aw, GLdouble ah);
   void scale(GLdouble s); 
- 
+  void moveLR(GLdouble t);
+  void moveUD(GLdouble t);
+  void moveFB(GLdouble t);
+
 protected:
   glm::dvec3 eye = { 0.0, 0.0, 500.0 };
   glm::dvec3 look = { 0.0, 0.0, 0.0 };
@@ -61,6 +65,8 @@ protected:
   GLdouble nearVal = 1;
   GLdouble farVal = 10000;
   GLdouble factScale = 1;
+  GLdouble pitchv = 0.0;
+  GLdouble yawv = 0.0;
   glm::dmat4 projMat;
 
   Viewport* vp;

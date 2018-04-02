@@ -107,9 +107,32 @@ void key(unsigned char key, int x, int y)
   case 'o':
 	  camera.setAZ();
 	  break;
-  case 'a':
-	  
+  case 'A':
 	  dia->rotateZ();
+	  break;
+  case 'a':
+	  camera.moveLR(-10.0);
+	  break;
+  case 'd':
+	  camera.moveLR(10.0);
+	  break;
+  case 'z':
+	  camera.moveUD(10.0);
+	  break;
+  case 'x':
+	  camera.moveUD(-10.0);
+	  break;
+  case 'w':
+	  camera.moveFB(10.0);
+	  break;
+  case 's':
+	  camera.moveFB(-10.0);
+	  break;
+  case 'q':
+	  camera.rotatePY(1.0, 0.0);
+	  break;
+  case 'e':
+	  camera.rotatePY(0.0, 1.0);
 	  break;
   default:
     need_redisplay = false;
@@ -127,16 +150,16 @@ void specialKey(int key, int x, int y)
 
   switch (key) {
   case GLUT_KEY_RIGHT:
-    camera.pitch(4);   // rotate 1 on the X axis
+	  camera.yaw(-4);   
     break;
   case GLUT_KEY_LEFT:
-    camera.yaw(4);     // rotate 1 on the Y axis 
+    camera.yaw(4);      
     break;
   case GLUT_KEY_UP:
-    camera.roll(4);    // rotate 1 on the Z axis
+    camera.pitch(4);   
     break;
   case GLUT_KEY_DOWN:
-    camera.roll(-4);   // rotate -1 on the Z axis
+    camera.pitch(-4);
     break;
   default:
     need_redisplay = false;
