@@ -18,7 +18,7 @@ Viewport viewPort(800, 600);
 
 // Camera position, view volume and projection
 Camera camera(&viewPort);    
-
+glm::dvec2 mCoord;
 // Scene entities
 Scene scene(&camera);   
 
@@ -28,6 +28,8 @@ void display();
 void resize(int newWidth, int newHeight);
 void key(unsigned char key, int x, int y);
 void specialKey(int key, int x, int y);
+void motion(int x, int y);
+void mouse(int button, int state, int x, int y);
 
 //-------------------------------------------------------------------------
 
@@ -53,6 +55,8 @@ int main(int argc, char *argv[])
   glutKeyboardFunc(key);
   glutSpecialFunc(specialKey);
   glutDisplayFunc(display);
+  glutMouseFunc(mouse);
+  glutMotionFunc(motion);
  
   cout << glGetString(GL_VERSION) << '\n';
   cout << glGetString(GL_VENDOR) << '\n';
@@ -128,11 +132,8 @@ void key(unsigned char key, int x, int y)
   case 's':
 	  camera.moveFB(-10.0);
 	  break;
-  case 'q':
-	  camera.rotatePY(1.0, 0.0);
-	  break;
-  case 'e':
-	  camera.rotatePY(0.0, 1.0);
+  case 'p':
+	  camera.setPrj();
 	  break;
   default:
     need_redisplay = false;
@@ -171,3 +172,16 @@ void specialKey(int key, int x, int y)
 }
 //-------------------------------------------------------------------------
 
+void mouse(int button, int state, int x, int y){
+	int windowy = glutGetWindow();
+	mCoord.x = x;
+	mCoord.y = viewPort.getH() - y;
+}
+
+void motion(int x, int y){
+	glm::dvec2 mOffset = mCoord; // var. global
+	mCoord = glm::dvec2(x, glutGet(GLUT_WINDOW_HEIGHT) - y);
+	mOffset = (mCoord - mOffset) * 0.05; // sensitivity = 0.05
+	camera.rotatePY(mOffset.y, mOffset.x);
+	glutPostRedisplay();
+}

@@ -186,4 +186,33 @@ private:
 	GLdouble scaleY;
 };
 
+
+class GlassPot : public Entity
+{
+public:
+	GlassPot(GLdouble w, GLdouble h, GLuint x, GLuint y, GLdouble xt, GLdouble yt, GLdouble zt);
+	GlassPot() { };
+	virtual void draw();
+	virtual void render(glm::dmat4 const& modelViewMat);
+private:
+	GLdouble w;
+	GLdouble h;
+	GLdouble translateX;
+	GLdouble translateY;
+	GLdouble translateZ;
+};
+
+class Grass : public Entity
+{
+public:
+	Grass(GLdouble w, GLdouble h, GLuint x, GLuint y, GLdouble xt, GLdouble yt, GLdouble zt);
+	virtual void render(glm::dmat4 const& modelViewMat);
+	~Grass() { };
+	virtual void draw();
+private:
+	GLdouble translateX;
+	GLdouble translateY;
+	GLdouble translateZ;
+};
+
 #endif //_H_Entities_H_

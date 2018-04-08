@@ -28,9 +28,11 @@ void Scene::init()
   //objetos.push_back(new Poliespiral(0.0, 0.0, 0.0, 89.5, 0.5, 0.5, 100));
   //objetos.push_back(new Poliespiral(0.0, 0.0, 0.0, 45.0, 1.0, 1.0, 50));
   //objetos.push_back(new RectanguloTex(100.0, 100.0, 0, 0));
-  objetos.push_back(new CuboTex(100.0, 100.0, 0, 0, 50.0, 50.0, 50.0));
-  objetos.push_back(new DiaboloTex(100.0, 200.0, -200.0, 100.0, -200.0));
+  //objetos.push_back(new CuboTex(100.0, 100.0, 0, 0, 50.0, 50.0, 50.0));
+  //objetos.push_back(new DiaboloTex(100.0, 200.0, -200.0, 100.0, -200.0));
   objetos.push_back(new Suelo(100.0, 100.0, 10, 10));
+  objetos.push_back(new GlassPot(100.0, 100.0, 0, 0, 200.0, 50.0, -200.0));
+  objetos.push_back(new Grass(100.0, 100.0, 0, 0, 200.0, 50.0, -200.0));
 }
 //-------------------------------------------------------------------------
 

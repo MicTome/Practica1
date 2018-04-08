@@ -265,7 +265,7 @@ void Rectangulo::draw()
 RectanguloTex::RectanguloTex(GLdouble w, GLdouble h, GLuint x, GLuint y) : Entity()
 {
 	mesh = Mesh::generateRectangleTex(w, h, x, y);
-	texture.load("..\\Bmps\\container.bmp");
+	texture.load("..\\Bmps\\container.bmp", ivec3(1.0, 1.0, 1.0));
 }
 //-------------------------------------------------------------------------
 
@@ -289,8 +289,8 @@ CuboTex::CuboTex(GLdouble w, GLdouble h, GLuint x, GLuint y, GLdouble xt, GLdoub
 	this->translateX = xt;
 	this->translateY = yt;
 	this->translateZ = zt;
-    texture.load("..\\Bmps\\container.bmp");
-	intTex.load("..\\Bmps\\chuches.bmp");
+	texture.load("..\\Bmps\\container.bmp", ivec3(1.0, 1.0, 1.0));
+	intTex.load("..\\Bmps\\chuches.bmp", ivec3(1.0, 1.0, 1.0));
 }
 
 //-------------------------------------------------------------------------
@@ -361,7 +361,7 @@ void CuboTex::render(dmat4 const& modelViewMat)
 TriPyramidTex::TriPyramidTex(GLdouble l, GLdouble h) : Entity()
 {
 	mesh = Mesh::generateTriPyramidTex(l, h);
-	texture.load("..\\Bmps\\floris.bmp");
+	texture.load("..\\Bmps\\floris.bmp", ivec3(1.0, 1.0, 1.0));
 }
 
 //-------------------------------------------------------------------------
@@ -381,7 +381,7 @@ DiaboloTex::DiaboloTex(GLdouble r, GLdouble h, GLdouble xt, GLdouble yt, GLdoubl
 	this->translateX = xt;
 	this->translateY = yt;
 	this->translateZ = zt;
-	texture.load("..\\Bmps\\floris.bmp");
+	texture.load("..\\Bmps\\floris.bmp", ivec3(1.0, 1.0, 1.0));
 }
 
 //-------------------------------------------------------------------------
@@ -450,7 +450,7 @@ Suelo::Suelo(GLdouble w, GLdouble h, GLuint x, GLuint y) : Entity()
 	mesh = Mesh::generateRectangleTex(w, h, x, y);
 	this->scaleX = x;
 	this->scaleY = y;
-	texture.load("..\\Bmps\\baldosa1.bmp");
+	texture.load("..\\Bmps\\baldosa1.bmp", ivec3(1.0, 1.0, 1.0));
 }
 //-------------------------------------------------------------------------
 
@@ -478,4 +478,79 @@ void Suelo::render(dmat4 const& modelViewMat)
 	aMat = rotate(aMat, radians(90.0), dvec3(1, 0, 0));
 	glLoadMatrixd(value_ptr(aMat));
 	draw();
+}
+
+GlassPot::GlassPot(GLdouble w, GLdouble h, GLuint x, GLuint y, GLdouble xt, GLdouble yt, GLdouble zt) : Entity()
+{
+	mesh = Mesh::generateCuboTex(w, h, x, y);
+	this->h = h;
+	this->w = w;
+	this->translateX = xt;
+	this->translateY = yt;
+	this->translateZ = zt;
+	texture.load("..\\Bmps\\window.bmp", ivec3(0.5, 0.5, 0.5));
+}
+
+//-------------------------------------------------------------------------
+
+void GlassPot::draw()
+{
+	texture.bind();
+	mesh->draw();
+	texture.unbind();
+}
+
+void GlassPot::render(dmat4 const& modelViewMat)
+{
+
+	setMvM(modelViewMat);
+	dmat4 aMat = modelViewMat * modelMat;
+	aMat = scale(aMat, dvec3(2.0, 2.0, 2.0));
+	aMat = translate(aMat, dvec3(this->translateX, this->translateY, this->translateZ));
+	glLoadMatrixd(value_ptr(aMat));
+	texture.bind();
+	mesh->draw();
+	texture.unbind();
+}
+
+Grass::Grass(GLdouble w, GLdouble h, GLuint x, GLuint y, GLdouble xt, GLdouble yt, GLdouble zt) : Entity()
+{
+	mesh = Mesh::generateRectangleTex(w, h, x, y);
+	this->translateX = xt;
+	this->translateY = yt;
+	this->translateZ = zt;
+	texture.load("..\\Bmps\\grass.bmp", ivec3(1.0, 1.0, 1.0));
+}
+//-------------------------------------------------------------------------
+
+void Grass::draw()
+{
+	texture.bind();
+	mesh->draw();
+	texture.unbind();
+}
+
+//-------------------------------------------------------------------------
+
+void Grass::render(dmat4 const& modelViewMat)
+{
+	setMvM(modelViewMat);
+
+
+	glMatrixMode(GL_MODELVIEW);
+	dmat4 aMat = modelViewMat * modelMat;
+
+	aMat = scale(aMat, dvec3((2.0, 2.0, 2.0)));
+	aMat = translate(aMat, dvec3(this->translateX, this->translateY, this->translateZ));
+	aMat = rotate(aMat, radians(45.0), dvec3(0, 1, 0));
+	glLoadMatrixd(value_ptr(aMat));
+	texture.bind();
+	mesh->draw();
+	texture.unbind();
+
+	aMat = rotate(aMat, radians(90.0), dvec3(0, 1, 0));
+	glLoadMatrixd(value_ptr(aMat));
+	texture.bind();
+	mesh->draw();
+	texture.unbind();
 }

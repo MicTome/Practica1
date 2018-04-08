@@ -19,7 +19,7 @@ void Texture::bind() { // argumento para el modo de mezclar los colores
 	// GL_MODULATE / GL_ADD …
 }
 
-bool Texture::load(const std::string & BMP_Name, GLubyte alpha) {
+bool Texture::load(const std::string & BMP_Name, glm::ivec3 color, GLubyte alpha) {
 	if (id == 0) init();
 	PixMap32RGBA pixMap; // var. local para cargar la imagen del archivo
 	pixMap.load_bmp24BGR(BMP_Name); // carga y añade alpha=255
@@ -32,4 +32,9 @@ bool Texture::load(const std::string & BMP_Name, GLubyte alpha) {
 		GL_UNSIGNED_BYTE, pixMap.data());
 	// transferir a openGL
 	return true;
+}
+
+void wrap(GLuint wp = GL_CLAMP){
+
+
 }

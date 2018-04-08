@@ -54,6 +54,7 @@ public:
   void moveLR(GLdouble t);
   void moveUD(GLdouble t);
   void moveFB(GLdouble t);
+  void setPrj();
 
 protected:
   glm::dvec3 eye = { 0.0, 0.0, 500.0 };
@@ -61,14 +62,16 @@ protected:
   glm::dvec3 up = { 0.0, 1.0, 0.0 };
   glm::dmat4 viewMat;  // inverse
 
+  glm::dvec3 n;
   GLdouble xRight, xLeft, yTop, yBot;
   GLdouble nearVal = 1;
   GLdouble farVal = 10000;
   GLdouble factScale = 1;
-  GLdouble pitchv = 0.0;
-  GLdouble yawv = 0.0;
+  GLdouble pitchv;
+  GLdouble yawv;
+  glm::dvec3 front;
   glm::dmat4 projMat;
-
+  bool orto = false;
   Viewport* vp;
 
   void setVM();
