@@ -35,13 +35,10 @@ void Camera::setAZ()
   look= dvec3(0, 0, 0);
   up= dvec3(0, 1, 0);
   n = normalize(eye - look);
+  right = normalize(cross(up, n));
   front = -n;
-  pitchv = asin(radians(front.x)) * acos(radians(front.y));
-  yawv = 0;
-
-	/*  sin(radians(yawv)) * cos(radians(pitchv));
-  front.y = sin(radians(pitchv));
-  front.z = -cos(radians(yawv)) * cos(radians(pitchv));*/
+  pitchv = degrees(asin(front.y));
+  yawv = degrees(atan(radians(front.x), radians(-front.z)));
   viewMat = lookAt(eye, look, up);
   setVM();
 }
@@ -53,9 +50,10 @@ void Camera::set3D()
   look= dvec3(0, 10, 0);
   up= dvec3(0, 1, 0);
   n = normalize(eye - look);
+  right = normalize(cross(up, n));
   front = -n;
-  pitchv = asin(radians(front.x)) * acos(radians(front.y));
-  yawv = 0;
+  pitchv = degrees(asin(front.y));
+  yawv = degrees(atan(radians(front.x), radians(-front.z)));
   viewMat = lookAt(eye, look, up);
   setVM();
 }
@@ -107,36 +105,42 @@ void Camera::setSize(GLdouble aw, GLdouble ah)
 
 void Camera::setPM() 
 {
-  projMat = ortho(xLeft*factScale, xRight*factScale, yBot*factScale, yTop*factScale, nearVal, farVal);
-  glMatrixMode(GL_PROJECTION);
-  glLoadMatrixd(value_ptr(projMat));
-  glMatrixMode(GL_MODELVIEW);
+	if (orto){
+		projMat = ortho(xLeft*factScale, xRight*factScale, yBot*factScale, yTop*factScale, nearVal, farVal);
+		glMatrixMode(GL_PROJECTION);
+		glLoadMatrixd(value_ptr(projMat));
+		glMatrixMode(GL_MODELVIEW);
+	}
+	else{
+		glMatrixMode(GL_PROJECTION);
+		projMat = frustum(xLeft*factScale, xRight*factScale, yBot*factScale, yTop*factScale, yTop*factScale, farVal);
+		glLoadMatrixd(value_ptr(projMat));
+		glMatrixMode(GL_MODELVIEW);
+	}
 }
 //-------------------------------------------------------------------------
 
 
 void Camera::moveLR(GLdouble t)
 {
-	dvec3 u = normalize(cross(up, n));
-	eye += u * t;
+	eye += right * t;
 	viewMat = lookAt(eye, eye + front, up);
-	//setVM();
+	setVM();
 }
 
 void Camera::moveUD(GLdouble t)
 {
-	dvec3 u = normalize(cross(up, n));
-	dvec3 v = cross(n, u);
+	dvec3 v = cross(n, right);
 	eye += v * t;
 	viewMat = lookAt(eye, eye + front, up);
-	//setVM();
+	setVM();
 }
 
 void Camera::moveFB(GLdouble t)
 {
 	eye += front * t;
 	viewMat = lookAt(eye, eye + front, up);
-	//setVM();
+	setVM();
 }
 
 void Camera::rotatePY(GLdouble incrPitch, GLdouble incrYaw){
@@ -151,23 +155,11 @@ void Camera::rotatePY(GLdouble incrPitch, GLdouble incrYaw){
 	front.x = sin(radians(yawv)) * cos(radians(pitchv));
 	front.y = sin(radians(pitchv));
 	front.z = -cos(radians(yawv)) * cos(radians(pitchv));
-	viewMat = lookAt(eye, eye + front, up); 
-	setVM();
+	viewMat = lookAt(eye, eye + front, up);
+	
 }
 
 void Camera::setPrj(){
-	if (!orto){
-		glMatrixMode(GL_PROJECTION);
-		projMat = ortho(xLeft*factScale, xRight*factScale, yBot*factScale, yTop*factScale, nearVal, farVal);
-		glLoadMatrixd(value_ptr(projMat));
-		glMatrixMode(GL_MODELVIEW);
-		orto = true;
-	}
-	else{
-		glMatrixMode(GL_PROJECTION);
-		projMat = frustum(xLeft*factScale, xRight*factScale, yBot*factScale, yTop*factScale, nearVal, farVal/100);
-		glLoadMatrixd(value_ptr(projMat));
-		glMatrixMode(GL_MODELVIEW);
-		orto = false;
-	}
+	orto = !orto;
+	setPM();
 }

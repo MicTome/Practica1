@@ -27,6 +27,13 @@ bool Texture::load(const std::string & BMP_Name, glm::ivec3 color, GLubyte alpha
 	if (alpha != 255) pixMap.set_alpha(alpha);
 	w = pixMap.width();
 	h = pixMap.height();
+	PixMap32RGBA::rgba_color a = PixMap32RGBA::rgba_color();
+	a.r = color.r;
+	a.g = color.g;
+	a.b = color.b;
+	a.a = 0;
+	pixMap.set_colorkey_alpha(a, 0);
+
 	glBindTexture(GL_TEXTURE_2D, id);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
 		GL_UNSIGNED_BYTE, pixMap.data());

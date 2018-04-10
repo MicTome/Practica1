@@ -63,6 +63,7 @@ protected:
   glm::dmat4 viewMat;  // inverse
 
   glm::dvec3 n;
+  glm::dvec3 right;
   GLdouble xRight, xLeft, yTop, yBot;
   GLdouble nearVal = 1;
   GLdouble farVal = 10000;
@@ -71,7 +72,7 @@ protected:
   GLdouble yawv;
   glm::dvec3 front;
   glm::dmat4 projMat;
-  bool orto = false;
+  bool orto = true;
   Viewport* vp;
 
   void setVM();

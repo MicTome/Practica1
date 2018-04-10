@@ -488,16 +488,13 @@ GlassPot::GlassPot(GLdouble w, GLdouble h, GLuint x, GLuint y, GLdouble xt, GLdo
 	this->translateX = xt;
 	this->translateY = yt;
 	this->translateZ = zt;
-	texture.load("..\\Bmps\\window.bmp", ivec3(0.5, 0.5, 0.5));
+	texture.load("..\\Bmps\\window.bmp", ivec3(0.5, 0.5, 0.5), 100);
 }
 
 //-------------------------------------------------------------------------
 
 void GlassPot::draw()
 {
-	texture.bind();
-	mesh->draw();
-	texture.unbind();
 }
 
 void GlassPot::render(dmat4 const& modelViewMat)
@@ -508,9 +505,12 @@ void GlassPot::render(dmat4 const& modelViewMat)
 	aMat = scale(aMat, dvec3(2.0, 2.0, 2.0));
 	aMat = translate(aMat, dvec3(this->translateX, this->translateY, this->translateZ));
 	glLoadMatrixd(value_ptr(aMat));
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	texture.bind();
 	mesh->draw();
 	texture.unbind();
+	glDisable(GL_BLEND);
 }
 
 Grass::Grass(GLdouble w, GLdouble h, GLuint x, GLuint y, GLdouble xt, GLdouble yt, GLdouble zt) : Entity()
@@ -519,15 +519,14 @@ Grass::Grass(GLdouble w, GLdouble h, GLuint x, GLuint y, GLdouble xt, GLdouble y
 	this->translateX = xt;
 	this->translateY = yt;
 	this->translateZ = zt;
-	texture.load("..\\Bmps\\grass.bmp", ivec3(1.0, 1.0, 1.0));
+	texture.load("..\\Bmps\\grass.bmp", ivec3(0.0, 0.0, 0.0), 0);
+
 }
 //-------------------------------------------------------------------------
 
 void Grass::draw()
 {
-	texture.bind();
-	mesh->draw();
-	texture.unbind();
+
 }
 
 //-------------------------------------------------------------------------

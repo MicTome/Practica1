@@ -151,10 +151,10 @@ void specialKey(int key, int x, int y)
 
   switch (key) {
   case GLUT_KEY_RIGHT:
-	  camera.yaw(-4);   
+	  camera.yaw(4);   
     break;
   case GLUT_KEY_LEFT:
-    camera.yaw(4);      
+    camera.yaw(-4);      
     break;
   case GLUT_KEY_UP:
     camera.pitch(4);   
