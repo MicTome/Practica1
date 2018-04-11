@@ -473,7 +473,6 @@ void Suelo::render(dmat4 const& modelViewMat)
 
 	glMatrixMode(GL_MODELVIEW);
 	dmat4 aMat = modelViewMat * modelMat;
-
 	aMat = scale(aMat, dvec3((GLdouble)this->scaleX, 1.0, (GLdouble)this->scaleY));
 	aMat = rotate(aMat, radians(90.0), dvec3(1, 0, 0));
 	glLoadMatrixd(value_ptr(aMat));
@@ -499,14 +498,13 @@ void GlassPot::draw()
 
 void GlassPot::render(dmat4 const& modelViewMat)
 {
-
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	setMvM(modelViewMat);
 	dmat4 aMat = modelViewMat * modelMat;
 	aMat = scale(aMat, dvec3(2.0, 2.0, 2.0));
 	aMat = translate(aMat, dvec3(this->translateX, this->translateY, this->translateZ));
 	glLoadMatrixd(value_ptr(aMat));
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	texture.bind();
 	mesh->draw();
 	texture.unbind();
@@ -519,7 +517,7 @@ Grass::Grass(GLdouble w, GLdouble h, GLuint x, GLuint y, GLdouble xt, GLdouble y
 	this->translateX = xt;
 	this->translateY = yt;
 	this->translateZ = zt;
-	texture.load("..\\Bmps\\grass.bmp", ivec3(0.0, 0.0, 0.0), 0);
+	texture.load("..\\Bmps\\grass.bmp", ivec3(0.0, 0.0, 0.0));
 
 }
 //-------------------------------------------------------------------------
@@ -534,8 +532,9 @@ void Grass::draw()
 void Grass::render(dmat4 const& modelViewMat)
 {
 	setMvM(modelViewMat);
-
-
+	glEnable(GL_BLEND);
+	glDepthMask(GL_FALSE);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glMatrixMode(GL_MODELVIEW);
 	dmat4 aMat = modelViewMat * modelMat;
 
@@ -549,7 +548,10 @@ void Grass::render(dmat4 const& modelViewMat)
 
 	aMat = rotate(aMat, radians(90.0), dvec3(0, 1, 0));
 	glLoadMatrixd(value_ptr(aMat));
+	
 	texture.bind();
 	mesh->draw();
 	texture.unbind();
+	glDisable(GL_BLEND);
+	glDepthMask(GL_TRUE);
 }

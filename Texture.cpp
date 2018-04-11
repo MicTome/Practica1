@@ -27,6 +27,7 @@ bool Texture::load(const std::string & BMP_Name, glm::ivec3 color, GLubyte alpha
 	if (alpha != 255) pixMap.set_alpha(alpha);
 	w = pixMap.width();
 	h = pixMap.height();
+
 	PixMap32RGBA::rgba_color a = PixMap32RGBA::rgba_color();
 	a.r = color.r;
 	a.g = color.g;
