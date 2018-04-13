@@ -42,7 +42,26 @@ bool Texture::load(const std::string & BMP_Name, glm::ivec3 color, GLubyte alpha
 	return true;
 }
 
-void wrap(GLuint wp = GL_CLAMP){
+void Texture::loadColorBuffer(GLsizei width, GLsizei height)
+{
+	glReadBuffer(GL_FRONT);
+	glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+		0, 0, width, height, 0);
+	w = width;
+	h = height;
+}
 
+void Texture::save(const std::string & BMP_Name)
+{
+	PixMap32RGBA pixMap;
+	pixMap.create_pixmap(w, h);
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixMap.data());
+	pixMap.save_bmp24BGR(BMP_Name);
+	pixMap.free();
+}
+
+void Texture::wrap(GLuint wp){
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wp);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wp);
 
 }

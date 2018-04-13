@@ -107,6 +107,7 @@ void ContCubo::draw()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
+
 Diabolo::Diabolo(GLdouble l, GLdouble h) : Entity()
 {
 	rotationZ = 0;
@@ -518,7 +519,7 @@ Grass::Grass(GLdouble w, GLdouble h, GLuint x, GLuint y, GLdouble xt, GLdouble y
 	this->translateY = yt;
 	this->translateZ = zt;
 	texture.load("..\\Bmps\\grass.bmp", ivec3(0.0, 0.0, 0.0));
-
+	texture.wrap(GL_CLAMP);
 }
 //-------------------------------------------------------------------------
 

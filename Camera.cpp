@@ -113,7 +113,7 @@ void Camera::setPM()
 	}
 	else{
 		glMatrixMode(GL_PROJECTION);
-		projMat = frustum(xLeft*factScale, xRight*factScale, yBot*factScale, yTop*factScale, yTop*factScale, farVal);
+		projMat = frustum(xLeft*factScale, xRight*factScale, yBot*factScale, yTop*factScale, yTop, farVal);
 		glLoadMatrixd(value_ptr(projMat));
 		glMatrixMode(GL_MODELVIEW);
 	}

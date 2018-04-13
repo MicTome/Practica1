@@ -88,6 +88,11 @@ void Scene::render()
 }
 //-------------------------------------------------------------------------
 
+
 Diabolo* Scene::getDiabolo(){
 	return (Diabolo*)objetos.back();
+}
+
+DiaboloTex* Scene::getDiaboloTex(){
+	return (DiaboloTex*)objetos[2];
 }

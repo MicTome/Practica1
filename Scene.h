@@ -17,6 +17,7 @@ public:
     void init();
 	  void render();    
 	  Diabolo* getDiabolo();
+	  DiaboloTex* getDiaboloTex();
 	  
 protected:
 	  Camera* camera;

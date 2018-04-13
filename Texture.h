@@ -13,6 +13,8 @@ public:
 	~Texture() { if (id != 0) glDeleteTextures(1, &id); };
 	bool load(const std::string & BMP_Name, glm::ivec3 color, GLubyte alpha = 255);
 	void wrap(GLuint wp = GL_CLAMP);
+	void loadColorBuffer(GLsizei width, GLsizei height);
+	void save(const std::string & BMP_Name);
 	void bind();
 	void unbind() { glBindTexture(GL_TEXTURE_2D, 0); };
 protected:

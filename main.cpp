@@ -94,8 +94,9 @@ void resize(int newWidth, int newHeight)
 
 void key(unsigned char key, int x, int y)
 {
+	Texture tex;
   bool need_redisplay = true;
-  Diabolo* dia = scene.getDiabolo();
+  DiaboloTex* dia = scene.getDiaboloTex();
   switch (key) {
   case 27:  // Escape key 
     glutLeaveMainLoop();  // Freeglut's sentence for stopping glut's main loop 
@@ -135,6 +136,10 @@ void key(unsigned char key, int x, int y)
 	  break;
   case 'p':
 	  camera.setPrj();
+	  break;
+  case 'f':
+	  tex.loadColorBuffer(viewPort.getW(), viewPort.getH());
+	  tex.save("..\\Bmps\\prueba.bmp");
 	  break;
   default:
     need_redisplay = false;
