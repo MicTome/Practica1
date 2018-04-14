@@ -18,12 +18,18 @@ Viewport viewPort(800, 600);
 
 // Camera position, view volume and projection
 Camera camera(&viewPort);    
+/**
+mCoord atributo necesario para guardar las coordenadsa del raton, la x y la inversa de la y (que se da alreves cuando obtienes la
+coordenada. Mirar motion y mouse.
+*/
 glm::dvec2 mCoord;
 // Scene entities
 Scene scene(&camera);   
 
 //----------- Callbacks ----------------------------------------------------
-
+/**
+Para realizar un callback, necesitas crear un metodo aqui, y en el main llamar a la funcion glut de los callbacks
+*/
 void display();
 void resize(int newWidth, int newHeight);
 void key(unsigned char key, int x, int y);
@@ -51,6 +57,9 @@ int main(int argc, char *argv[])
   int win = glutCreateWindow( "Freeglut-project" );  // window's identifier
   
   // Callback registration
+  /**
+  Llamada a los callbacks con la funcion creada, cada uno admite una funcion de X parametros
+  */
   glutReshapeFunc(resize);
   glutKeyboardFunc(key);
   glutSpecialFunc(specialKey);
@@ -94,7 +103,11 @@ void resize(int newWidth, int newHeight)
 
 void key(unsigned char key, int x, int y)
 {
-	Texture tex;
+	/**
+	Variable para la foto
+	dia permite que se giren los diabolos
+	*/
+  Texture tex;
   bool need_redisplay = true;
   DiaboloTex* dia = scene.getDiaboloTex();
   switch (key) {
@@ -117,27 +130,51 @@ void key(unsigned char key, int x, int y)
 	  dia->rotateZ();
 	  break;
   case 'a':
+	  /**
+	  Mueve a la izquierda camara
+	  */
 	  camera.moveLR(-10.0);
 	  break;
   case 'd':
+	  /**
+	  Mueve a la derecha la camara
+	  */
 	  camera.moveLR(10.0);
 	  break;
   case 'z':
+	  /**
+	  Mueve hacia arriba la camara
+	  */
 	  camera.moveUD(10.0);
 	  break;
   case 'x':
+	  /**
+	  Mueve hacia abajo la camara
+	  */
 	  camera.moveUD(-10.0);
 	  break;
   case 'w':
+	  /**
+	  Mueve hacia el frente la camara
+	  */
 	  camera.moveFB(10.0);
 	  break;
   case 's':
+	  /**
+	  Mueve hacia atras la camara
+	  */
 	  camera.moveFB(-10.0);
 	  break;
   case 'p':
+	  /**
+	  cambio de perspectiva de ortogonal a perspectiva
+	  */
 	  camera.setPrj();
 	  break;
   case 'f':
+	  /**
+	  Captura de pantalla dado el tamaño de la pantalla y lugar asignado para guardar la captura
+	  */
 	  tex.loadColorBuffer(viewPort.getW(), viewPort.getH());
 	  tex.save("..\\Bmps\\prueba.bmp");
 	  break;
@@ -178,12 +215,17 @@ void specialKey(int key, int x, int y)
 }
 //-------------------------------------------------------------------------
 
+/**
+mouse obtiene las coordenadas del raton. state suele estare n 0
+*/
 void mouse(int button, int state, int x, int y){
-	int windowy = glutGetWindow();
 	mCoord.x = x;
 	mCoord.y = viewPort.getH() - y;
 }
 
+/**
+motion modifica los valores y mueve la camara segun se mueva el raton cuando esta pulsado
+*/
 void motion(int x, int y){
 	glm::dvec2 mOffset = mCoord; // var. global
 	mCoord = glm::dvec2(x, glutGet(GLUT_WINDOW_HEIGHT) - y);

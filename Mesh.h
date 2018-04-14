@@ -33,6 +33,9 @@ protected:
    GLuint type = GL_POINTS;
    glm::dvec3* vertices = nullptr;
    glm::dvec4* colors = nullptr;
+   /**
+   Variable necesaria para poder añadir texturas a los objetos
+   */
    glm::dvec2 * texCoords = nullptr;
 };
 

@@ -6,6 +6,9 @@ void Scene::init()
 { // OpenGL basic setting
   glClearColor(1.0, 1.0, 1.0, 1.0);  // background color (alpha=1 -> opaque)
   glEnable(GL_DEPTH_TEST);  
+  /**
+  Necesario para poder usar texturas
+  */
   glEnable(GL_TEXTURE_2D);
   
   camera->setAZ();
@@ -34,7 +37,9 @@ void Scene::init()
   objetos.push_back(new Grass(100.0, 100.0, 0, 0, 200.0, 50.0, -200.0));
   objetos.push_back(new GlassPot(100.0, 100.0, 0, 0, 200.0, 50.0, -200.0));
 
-
+  /**
+  Los objetos opacos van primero, los semitransparentes o transparentes segundos y por ultimo los translucidos
+  */
 
 }
 //-------------------------------------------------------------------------
@@ -57,7 +62,9 @@ void Scene::render()
 	{
 		it->render(camera->getViewMat());
 	}
-
+	/**
+	Permite añadir varios puntos de vista, en esta ocasion son 4
+	*/
 	/*Viewport* viewport = camera->getVP();
 	viewport->setSize(viewport->getW() / 2, viewport->getH() / 2);
 	int i = 0;
@@ -88,7 +95,10 @@ void Scene::render()
 }
 //-------------------------------------------------------------------------
 
-
+/**
+Metodos para poder obtener los objetos dados, en el main se llama a esta funcion y desde alli se puede llamar a las funciones de los objetos
+para despues llamar al
+*/
 Diabolo* Scene::getDiabolo(){
 	return (Diabolo*)objetos.back();
 }

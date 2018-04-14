@@ -1,4 +1,4 @@
-#include "Entities.h"
+﻿#include "Entities.h"
 #include <gtc/matrix_transform.hpp>  
 #include <gtc/type_ptr.hpp>
 
@@ -50,6 +50,9 @@ Triangle::Triangle(GLdouble l) : Entity()
 
 void Triangle::draw()
 {
+	/**
+	Se dibuja el objeto con lineas del color dado y el grosor, por delante y por detras
+	*/
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glColor3f(0.0, 0.0, 1.0);
 	glLineWidth(2);
@@ -73,12 +76,20 @@ void TriangleRGB::draw()
 }
 //-------------------------------------------------------------------------
 
+/**
+Para crear cualquier objeto, se llama a su mesh para crearlo
+l: lado
+h: altura
+*/
 TriPyramid::TriPyramid(GLdouble l, GLdouble h) : Entity()
 {
 	mesh = Mesh::generateTriPyramid(l, h);
 }
 //-------------------------------------------------------------------------
 
+/**
+En los draw se dibujan los objetos, a no ser que tenga un render
+*/
 void TriPyramid::draw()
 {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -107,7 +118,10 @@ void ContCubo::draw()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-
+/**
+l: lado
+h: altura
+*/
 Diabolo::Diabolo(GLdouble l, GLdouble h) : Entity()
 {
 	rotationZ = 0;
@@ -127,6 +141,9 @@ void Diabolo::draw()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
+/**
+render para generar un diabolo real, dado que en el constructor solo tienes una tripiramide
+*/
 void Diabolo::render(dmat4 const& modelViewMat)
 {
 	setMvM(modelViewMat);
@@ -135,23 +152,26 @@ void Diabolo::render(dmat4 const& modelViewMat)
 	dmat4 aMat = modelViewMat * modelMat;
 
 	aMat = rotate(aMat, radians(this->rotationZ), dvec3(0, 0, 1));
-	//aMat
+	//Se traslada y se crea una de las piramides
 	glColor3f(0.0, 0.0, 1.0);
 	aMat = translate(aMat, dvec3(0.0, 0.0, -this->height));
 	glLoadMatrixd(value_ptr(aMat));
 	draw();
 
+	//Se crea la segunda piramide del mismo lado
 	glColor3f(0.0, 1.0, 0.0);
 	aMat = rotate(aMat, radians(180.0), dvec3(0, 0, 1));
 	glLoadMatrixd(value_ptr(aMat));
 	draw();
-
+	
+	//Se crea la tercera, rotando y trasladando para estar punta con punta
 	glColor3f(1.0, 0.0, 0.0);
 	aMat = translate(aMat, dvec3(0.0, 0.0, this->height*2));
 	aMat = rotate(aMat, radians(180.0), dvec3(1, 0, 0));
 	glLoadMatrixd(value_ptr(aMat));
 	draw();
 
+	//La ultima que se junta con la anterior
 	glColor3f(0.0, 0.0, 0.0);
 	aMat = rotate(aMat, radians(180.0), dvec3(0, 0, 1));
 	glLoadMatrixd(value_ptr(aMat));
@@ -165,6 +185,12 @@ void::Diabolo::rotateZ(){
 
 //-------------------------------------------------------------------------
 
+/**
+w: ancho
+h: altura
+Deberian ser siempre los mismos
+Tienes un mes con un rectangulo y cun cubomesh con el cubo
+*/
 Cubo::Cubo(GLdouble w, GLdouble h) : Entity()
 {
 	mesh = Mesh::generateRectangle(w, h);
@@ -182,6 +208,7 @@ void Cubo::render(dmat4 const& modelViewMat)
 {
 	setMvM(modelViewMat);
 
+	//Dibujamos los laterales del cubo
 	glMatrixMode(GL_MODELVIEW);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glLineWidth(2);
@@ -189,11 +216,13 @@ void Cubo::render(dmat4 const& modelViewMat)
 	dmat4 aMat = modelViewMat * modelMat;
 	cubeMesh->draw();
 	
+	//Dibujamos la base del cubo
 	aMat = translate(aMat, dvec3(0, -this->h/2, 0));
 	aMat = rotate(aMat, radians(90.0), dvec3(1, 0, 0));
 	glLoadMatrixd(value_ptr(aMat));
 	mesh->draw();
 
+	//Dibujamos la tapa inclinada del mismo, trasladando y rotando hasta conseguir la inclinacion adecuada
 	aMat = translate(aMat, dvec3(0, 0, -this->h / 2));
 	aMat = rotate(aMat, radians(-90.0), dvec3(1, 0, 0));
 
@@ -262,25 +291,45 @@ void Rectangulo::draw()
 }
 
 //-------------------------------------------------------------------------
-
+/**
+l: lado
+h: altura
+x: numero de veces que se repite la textura en x
+y: igual que el de arriba con y
+Se carga la textura colocada en esa ruta
+*/
 RectanguloTex::RectanguloTex(GLdouble w, GLdouble h, GLuint x, GLuint y) : Entity()
 {
 	mesh = Mesh::generateRectangleTex(w, h, x, y);
-	texture.load("..\\Bmps\\container.bmp", ivec3(1.0, 1.0, 1.0));
+	texture.load("..\\Bmps\\container2.bmp");
 }
 //-------------------------------------------------------------------------
 
 void RectanguloTex::draw()
 {
+	//Activa el uso de texturas en el objeto
     glEnable(GL_CULL_FACE);
+	//Solo por el frente, por detras se queda invisible (no se ve)
     glCullFace(GL_FRONT);
+	//Enlaza la textura con el objeto
 	texture.bind();
 	mesh->draw();
+	//La desenlaza
 	texture.unbind();
 }
 
 //-------------------------------------------------------------------------
 
+/**
+l: lado
+h: altura
+x: veces que se repite la textura en x
+y: veces que se repite la textura en y
+xt: valor de traslacion en x
+yt: valor de traslacion en y
+zt: valor de traslacion en z
+Este cubo es exactamente como el anterior, pero se añaden dos texturas con texture (la basica) e intTex (la del cubo)
+*/
 CuboTex::CuboTex(GLdouble w, GLdouble h, GLuint x, GLuint y, GLdouble xt, GLdouble yt, GLdouble zt) : Entity()
 {
     mesh = Mesh::generateRectangleTex(w, h, x, y);
@@ -290,8 +339,8 @@ CuboTex::CuboTex(GLdouble w, GLdouble h, GLuint x, GLuint y, GLdouble xt, GLdoub
 	this->translateX = xt;
 	this->translateY = yt;
 	this->translateZ = zt;
-	texture.load("..\\Bmps\\container.bmp", ivec3(1.0, 1.0, 1.0));
-	intTex.load("..\\Bmps\\chuches.bmp", ivec3(1.0, 1.0, 1.0));
+	texture.load("..\\Bmps\\container2.bmp");
+	intTex.load("..\\Bmps\\picos.bmp");
 }
 
 //-------------------------------------------------------------------------
@@ -311,6 +360,7 @@ void CuboTex::render(dmat4 const& modelViewMat)
     dmat4 aMat = modelViewMat * modelMat;
 	aMat = translate(aMat, dvec3(this->translateX, this->translateY, this->translateZ));
 	glLoadMatrixd(value_ptr(aMat));
+	//En cada parte del objeto que se va a dibujar, se coloca la textura indicada en la cara que se quiera
     glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
 
@@ -359,10 +409,15 @@ void CuboTex::render(dmat4 const& modelViewMat)
 
 //-------------------------------------------------------------------------
 
+/**
+l: lado
+h: altura
+Se añade la textura
+*/
 TriPyramidTex::TriPyramidTex(GLdouble l, GLdouble h) : Entity()
 {
 	mesh = Mesh::generateTriPyramidTex(l, h);
-	texture.load("..\\Bmps\\floris.bmp", ivec3(1.0, 1.0, 1.0));
+	texture.load("..\\Bmps\\floris.bmp");
 }
 
 //-------------------------------------------------------------------------
@@ -373,6 +428,13 @@ void TriPyramidTex::draw()
 
 //-------------------------------------------------------------------------
 
+/**
+l: lado
+h: altura
+xt: traslacion en x
+yt: traslacion en y
+zt: traslacion en z
+*/
 DiaboloTex::DiaboloTex(GLdouble r, GLdouble h, GLdouble xt, GLdouble yt, GLdouble zt) : Entity()
 {
 	rotationZ = 0;
@@ -382,11 +444,14 @@ DiaboloTex::DiaboloTex(GLdouble r, GLdouble h, GLdouble xt, GLdouble yt, GLdoubl
 	this->translateX = xt;
 	this->translateY = yt;
 	this->translateZ = zt;
-	texture.load("..\\Bmps\\floris.bmp", ivec3(1.0, 1.0, 1.0));
+	texture.load("..\\Bmps\\earth24.bmp");
 }
 
 //-------------------------------------------------------------------------
 
+/**
+Se puede hacer en el render, objeto a objeto, pero aqui, se pone la textura en cada cara, delante y detras
+*/
 void DiaboloTex::draw()
 {
 	glEnable(GL_CULL_FACE);
@@ -446,12 +511,18 @@ void::DiaboloTex::rotateZ() {
 
 //-------------------------------------------------------------------------
 
+/**
+l: lado
+h: altura
+x: veces que se repite la textura en x
+y: veces que se repite la textura en y
+*/
 Suelo::Suelo(GLdouble w, GLdouble h, GLuint x, GLuint y) : Entity()
 {
 	mesh = Mesh::generateRectangleTex(w, h, x, y);
 	this->scaleX = x;
 	this->scaleY = y;
-	texture.load("..\\Bmps\\baldosa1.bmp", ivec3(1.0, 1.0, 1.0));
+	texture.load("..\\Bmps\\baldosa1.bmp");
 }
 //-------------------------------------------------------------------------
 
@@ -471,7 +542,7 @@ void Suelo::render(dmat4 const& modelViewMat)
 {
 	setMvM(modelViewMat);
 
-
+	//Se escala y se gira el suelo
 	glMatrixMode(GL_MODELVIEW);
 	dmat4 aMat = modelViewMat * modelMat;
 	aMat = scale(aMat, dvec3((GLdouble)this->scaleX, 1.0, (GLdouble)this->scaleY));
@@ -480,6 +551,15 @@ void Suelo::render(dmat4 const& modelViewMat)
 	draw();
 }
 
+/**
+w: lado
+h: altura
+x: repeticion de la textura en x
+y: repeticion de la textura en y
+xt, yt, zt: traslaciones
+
+Es un cubo de cristal
+*/
 GlassPot::GlassPot(GLdouble w, GLdouble h, GLuint x, GLuint y, GLdouble xt, GLdouble yt, GLdouble zt) : Entity()
 {
 	mesh = Mesh::generateCuboTex(w, h, x, y);
@@ -488,7 +568,8 @@ GlassPot::GlassPot(GLdouble w, GLdouble h, GLuint x, GLuint y, GLdouble xt, GLdo
 	this->translateX = xt;
 	this->translateY = yt;
 	this->translateZ = zt;
-	texture.load("..\\Bmps\\window.bmp", ivec3(0.5, 0.5, 0.5), 100);
+	//alpha a 100 para hacerlo transparente
+	texture.load("..\\Bmps\\window.bmp", 100);
 }
 
 //-------------------------------------------------------------------------
@@ -499,6 +580,7 @@ void GlassPot::draw()
 
 void GlassPot::render(dmat4 const& modelViewMat)
 {
+	//Se activa el blend para poder cambiar el canal de alpha
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	setMvM(modelViewMat);
@@ -512,6 +594,15 @@ void GlassPot::render(dmat4 const& modelViewMat)
 	glDisable(GL_BLEND);
 }
 
+/**
+w: lado
+h: altura
+x: repeticion de la textura en x
+y: repeticion de la textura en y
+xt, yt, zt: traslaciones
+
+Hierba sin el blanco
+*/
 Grass::Grass(GLdouble w, GLdouble h, GLuint x, GLuint y, GLdouble xt, GLdouble yt, GLdouble zt) : Entity()
 {
 	mesh = Mesh::generateRectangleTex(w, h, x, y);
@@ -519,6 +610,7 @@ Grass::Grass(GLdouble w, GLdouble h, GLuint x, GLuint y, GLdouble xt, GLdouble y
 	this->translateY = yt;
 	this->translateZ = zt;
 	texture.load("..\\Bmps\\grass.bmp", ivec3(0.0, 0.0, 0.0));
+	//Necesario si quieres quitar los limites en color que provoca el uso de G_REPEAT
 	texture.wrap(GL_CLAMP);
 }
 //-------------------------------------------------------------------------
@@ -533,8 +625,11 @@ void Grass::draw()
 void Grass::render(dmat4 const& modelViewMat)
 {
 	setMvM(modelViewMat);
+	//Se activa el blend para poder hacer trasparencias
+	//Se desactiva la mascara (la cual provoca que se mezclen los colores de la textura actual con la del fondo)
 	glEnable(GL_BLEND);
 	glDepthMask(GL_FALSE);
+	//Por defecto son 0 y 1
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glMatrixMode(GL_MODELVIEW);
 	dmat4 aMat = modelViewMat * modelMat;
@@ -556,3 +651,72 @@ void Grass::render(dmat4 const& modelViewMat)
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
 }
+
+/**
+Para transparencias se utiliza la componente Alpha de los colores
+glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+Si el fragmento en curso pasa el test de profundidad y
+- es opaco (srcA = 1) -> srcBF =1 y dstBF = 0
+reemplaza al color del buffer
+- es transparente (srcA=0) -> srcBF =0 y dstBF = 1
+el color del buffer no se modifica
+- es translucido (srcA=0.5) -> srcBF = dstBF = 0.5
+el color del buffer se multiplica por 0.5 y se suma el del fragmento
+también multiplicado por 0.5
+
+ glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+Rectángulos: rojo translúcido (cercano), azul translúcido (lejano) y
+verde opaco (en medio)
+
+Orden de renderizado con objetos opacos y traslúcidos
+1- Test de profundidad activado por defecto
+Dibujar los objetos opacos
+2- Usar el buffer de profundidad solo para lectura:
+glDepthMask(GL_FALSE);
+realiza el test pero no modifica el Z-Buffer
+Dibujar los objetos traslúcidos
+Los que están delante de los opacos mezclarán el color
+3- glDepthMask(GL_TRUE)
+
+El Frame Buffer consta de varios buffers del mismo tamaño
+1. Colors buffers: front and back
+2. Depth buffer: depth test
+3. Stencil buffer: stencil test
+Se configura al crear la ventana
+glutInitDisplayMode( GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH |
+GLUT_STENCIL);
+Se reinician a los valores establecidos
+glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT |
+GL_STENCIL_BUFFER_BIT);
+Los test permiten descartar fragmentos para que no aporten color al
+Color Buffer. Primero se ejecuta el Depth Test, y después el Stencil Test.
+Se pueden utilizar frame buffer auxiliares (Frame Buffer Objects)
+
+Activar la escritura en el Stencil Buffer.
+2. Renderizar objetos escribiendo solo en el stencil buffer
+Desactivar la escritura en el Stencil buffer.
+4. Renderizar objetos utilizando el contenido del Stencil buffer con el test
+
+
+Ejemplos: Reflejos, sombras, perfiles
+1. Renderizar el cubo de forma habitual
+2. Activar la escritura en el stencil buffer (valor 1)
+3. Renderizar el suelo escribiendo en el stencil buffer y no en el Z-buffer
+4. Configurar el stencil test para que pasen los fragmentos con valor 1
+en el stencil buffer
+5. Renderizar el cubo invertido
+6. Desactivar el Stencil buffer
+
+
+
+
+EJEMPLO DE ANIMACION
+
+glMatrixMode(GL_MODELVIEW);
+for (int i = 0; i < n; i++) {
+glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+drawSnowFlake(vm);
+glutSwapBuffers();
+vm = rotate(vm, radians(5.0), dvec3(0.0,0.0,1.0));
+}
+*/

@@ -21,6 +21,9 @@ void Mesh::draw()
 		glEnableClientState(GL_COLOR_ARRAY);
 		glColorPointer(4, GL_DOUBLE, 0, colors);   // number of coordinates per color, type of each coordinate 
 	}
+	/**
+	Se añaden las texturas al objeto siempre que haya una en el mismo
+	*/
 	  if (texCoords != nullptr){
 		  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		  glTexCoordPointer(2, GL_DOUBLE, 0, texCoords);
@@ -60,6 +63,9 @@ Mesh * Mesh::generateAxesRGB(GLdouble l)
 }
 //-------------------------------------------------------------------------
 
+/**
+El triangulo se genera a base de senos y cosenos de 90 grados, sumando hasta llegar a los 3 vertices
+*/
 Mesh * Mesh::generateTriangle(GLdouble r)
 {
 	Mesh* m = new Mesh();
@@ -75,6 +81,9 @@ Mesh * Mesh::generateTriangle(GLdouble r)
 
 //-------------------------------------------------------------------------
 
+/**
+Igual que el anterior pero se le añade un color por vertice
+*/
 Mesh * Mesh::generateTriangleRGB(GLdouble r)
 {
 	Mesh* m = new Mesh();
@@ -96,6 +105,10 @@ Mesh * Mesh::generateTriangleRGB(GLdouble r)
 
 //-------------------------------------------------------------------------
 
+/**
+En este caso, la altura tiene su vertice, por lo que se necesita hacer un triangulo despues del vertice en altura
+Es necesario cerrar el triangulo con un vertice de mas al primero del triangulo
+*/
 Mesh * Mesh::generateTriPyramid(GLdouble r, GLdouble h)
 {
 	Mesh* m = new Mesh();
@@ -120,6 +133,11 @@ Mesh * Mesh::generateTriPyramid(GLdouble r, GLdouble h)
 
 //-------------------------------------------------------------------------
 
+/**
+El cubo (laterales) se genera a partir de la mitad de la longitud de lado dada
+Se crean los 4 vertices iniciales y se completan hasta llegar a cerrarse.
+Tiene los 8 vertices de un cubo normal, mas 2 para cerrarlo.
+*/
 Mesh * Mesh::generateContCubo(GLdouble l)
 {
 	Mesh* m = new Mesh();
@@ -145,6 +163,9 @@ Mesh * Mesh::generateContCubo(GLdouble l)
 
 //-------------------------------------------------------------------------
 
+/**
+Simplificación del cubo, igual que antes pero solo son 4 vertices
+*/
 Mesh * Mesh::generateRectangle(GLdouble w, GLdouble h)
 {
 	Mesh* m = new Mesh();
@@ -162,6 +183,9 @@ Mesh * Mesh::generateRectangle(GLdouble w, GLdouble h)
 
 //-------------------------------------------------------------------------
 
+/**
+Opcional
+*/
 Mesh * Mesh::generaDragon(GLuint numVert)
 {
 	GLdouble x = 0.0;
@@ -205,6 +229,9 @@ Mesh * Mesh::generaDragon(GLuint numVert)
 
 //----------------------------------------------------------------------------
 
+/**
+Opcional
+*/
 Mesh * Mesh::generaPoliespiral(GLdouble verIniX, GLdouble verIniY, GLdouble angIni, GLdouble incrAng,
 	GLdouble ladoIni, GLdouble incrLado, GLuint numVert){
 	Mesh* m = new Mesh();
@@ -242,7 +269,13 @@ Mesh * Mesh::generaPoliespiral(GLdouble verIniX, GLdouble verIniY, GLdouble angI
 }
 
 //-------------------------------------------------------------------------
-
+/**
+Se genera un traingulo que puede tener texturas, esta se coloca en las coordenadas 
+0.1--1.1
+|	   |
+|	   |
+0,0--1.0  Los +y, +x son para añadir mas veces la misma textura
+*/
 Mesh * Mesh::generateRectangleTex(GLdouble w, GLdouble h, GLuint x, GLuint y)
 {
 	Mesh *m = generateRectangle(w, h);
@@ -254,6 +287,12 @@ Mesh * Mesh::generateRectangleTex(GLdouble w, GLdouble h, GLuint x, GLuint y)
 	return m;
 }
 
+/**Se genera un cubo que puede tener texturas, esta se coloca en las coordenadas
+0.1--1.1--2.1--3.1--4.1
+|	   |    |    |    |
+|	   |    |    |    |
+0,0--1.0--2.0--3.0--4.0 Los +y es igual que antes
+*/
 Mesh* Mesh::generateCuboTex(GLdouble w, GLdouble h, GLuint x, GLuint y)
 {
 	Mesh *m = generateContCubo(w);
@@ -272,7 +311,11 @@ Mesh* Mesh::generateCuboTex(GLdouble w, GLdouble h, GLuint x, GLuint y)
 }
 
 //-------------------------------------------------------------------------
-
+/**Se genera una piramide que puede tener texturas, esta se coloca en las coordenadas
+Del 1 al 4 son los vertices de la parte inferior de la piramide, como son triangulos, comparten varios vertices
+Estos son los repetidos.
+El 0.5 en el 0, es para que se llegue hasta la mitad de la textura
+*/
 Mesh* Mesh::generateTriPyramidTex(GLdouble r, GLdouble h)
 {
 	Mesh *m = generateTriPyramid(r, h);

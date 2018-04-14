@@ -1,4 +1,4 @@
-#include "Camera.h"
+﻿#include "Camera.h"
 
 #include <gtc/matrix_transform.hpp>  
 #include <gtc/type_ptr.hpp>
@@ -29,6 +29,11 @@ using namespace glm;
  }
 //-------------------------------------------------------------------------
 
+ /**
+ Vista con la que se inicia
+Se le da valores a todos los atributos de la camara
+pitch y yaw necesitan esa formula para funcionar correctamente
+*/
 void Camera::setAZ() 
 {
   eye= dvec3(0, 0, 500);
@@ -43,7 +48,9 @@ void Camera::setAZ()
   setVM();
 }
 //-------------------------------------------------------------------------
-
+/**
+Vista al pulsar l, igual que antes
+*/
 void Camera::set3D() 
 {
   eye= dvec3(500, 500, 500);
@@ -103,6 +110,9 @@ void Camera::setSize(GLdouble aw, GLdouble ah)
 }
 //-------------------------------------------------------------------------
 
+/**
+Metodo que decide si se ve en perspectiva o en ortogonal, se cambia de una a otra pulsando p
+*/
 void Camera::setPM() 
 {
 	if (orto){
@@ -120,7 +130,9 @@ void Camera::setPM()
 }
 //-------------------------------------------------------------------------
 
-
+/**
+Se mueve a izquierda y derecha, right es u, la ortogonal a up y n
+*/
 void Camera::moveLR(GLdouble t)
 {
 	eye += right * t;
@@ -128,6 +140,9 @@ void Camera::moveLR(GLdouble t)
 	setVM();
 }
 
+/**
+Se mueve arriba y abajo con x,z, v es la ortogonal de n y u
+*/
 void Camera::moveUD(GLdouble t)
 {
 	dvec3 v = cross(n, right);
@@ -136,6 +151,9 @@ void Camera::moveUD(GLdouble t)
 	setVM();
 }
 
+/**
+Se mueve hacia el frente y hacia atras con w,s
+*/
 void Camera::moveFB(GLdouble t)
 {
 	eye += front * t;
@@ -143,6 +161,9 @@ void Camera::moveFB(GLdouble t)
 	setVM();
 }
 
+/**
+Metodo de las diapositivas, se actualizan pitch, yaw, front y el viewMat
+*/
 void Camera::rotatePY(GLdouble incrPitch, GLdouble incrYaw){
 	pitchv += incrPitch;
 	yawv += incrYaw;
@@ -159,7 +180,36 @@ void Camera::rotatePY(GLdouble incrPitch, GLdouble incrYaw){
 	
 }
 
+//Cambia con p de un a otro
 void Camera::setPrj(){
 	orto = !orto;
 	setPM();
 }
+
+
+
+/**
+Ejemplo: realizar una trayectoria circular alrededor de la escena.
+eye.x = cos(radians(++ang)) * radius;
+eye.z = -sin(radians(ang)) * radius;
+viewMat = lookAt(eye, vec3(0.0, 0.0, 0.0), (0.0, 1.0, 0.0));
+
+
+ Movimiento horizontal en el eje X del sistema global
+eye.x += incX; -> Cambia la dirección de vista
+viewMat = lookAt(eye, vec3(0.0, 0.0, 0.0), (0.0, 1.0, 0.0));
+
+
+ Movimiento horizontal en el eje U del sistema de la cámara
+eye += U * incX; -> Cambia la dirección de vista
+viewMat = lookAt(eye, vec3(0.0, 0.0, 0.0), (0.0, 1.0, 0.0));
+
+Relativos a la propia cámara
+ Mover la cámara en uno de sus ejes: mover el ojo (eye)
+ Eje u: eye += u * speed
+ Eje v: eye += v * speed
+ Eje n: eye += n * speed
+También modifica la dirección de vista: -(eye – look)
+ Si no queremos cambiar la dirección de vista -> mover look de la
+misma forma.
+*/

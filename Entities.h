@@ -18,6 +18,9 @@ public:
   virtual void render(glm::dmat4 const& modelViewMat);
   
 protected:
+	/**
+	Variable para añadir texturas
+	*/
   Texture texture;
   Mesh* mesh = nullptr;
   glm::dmat4 modelMat;
@@ -140,6 +143,9 @@ public:
 	Mesh* contCuboMesh = nullptr;
 
 private:
+	/**
+	Textura del propio cubo para poder tener mas texturas
+	*/
 	Texture intTex;
 	GLdouble w;
 	GLdouble h;
