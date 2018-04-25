@@ -4,18 +4,32 @@
 
 void Scene::init()
 { // OpenGL basic setting
+	
   glClearColor(1.0, 1.0, 1.0, 1.0);  // background color (alpha=1 -> opaque)
   glEnable(GL_DEPTH_TEST);  
-  /**
-  Necesario para poder usar texturas
-  */
-  glEnable(GL_TEXTURE_2D);
+
   
   camera->setAZ();
     
   // lights
+  glClearColor(0.6f, 0.7f, 0.8f, 1.0); // Fondo azul (o el que prefieras)
+  glEnable(GL_COLOR_MATERIAL);
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0); // Light0
+  GLfloat d[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, d);
+  GLfloat a[] = { 0.3f, 0.3f, 0.3f, 1.0f };
+  glLightfv(GL_LIGHT0, GL_AMBIENT, a);
+  GLfloat s[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+  glLightfv(GL_LIGHT0, GL_SPECULAR, s);
+  GLfloat p[] = { 50.0f, 50.0f, 50.0f, 1.0f };
+  glLightfv(GL_LIGHT0, GL_POSITION, p);
+  camera->set3D();
   // textures  
-
+  /**
+  Necesario para poder usar texturas
+  */
+  glEnable(GL_TEXTURE_2D);
   // objets
   objetos.push_back(new EjesRGB(200.0));
   //objetos.push_back(new Triangle(100.0));
@@ -31,11 +45,13 @@ void Scene::init()
   //objetos.push_back(new Poliespiral(0.0, 0.0, 0.0, 89.5, 0.5, 0.5, 100));
   //objetos.push_back(new Poliespiral(0.0, 0.0, 0.0, 45.0, 1.0, 1.0, 50));
   //objetos.push_back(new RectanguloTex(100.0, 100.0, 0, 0));
-  objetos.push_back(new CuboTex(100.0, 100.0, 0, 0, 50.0, 50.0, 50.0));
-  objetos.push_back(new DiaboloTex(100.0, 200.0, -200.0, 100.0, -200.0));
-  objetos.push_back(new Suelo(100.0, 100.0, 10, 10));
-  objetos.push_back(new Grass(100.0, 100.0, 0, 0, 200.0, 50.0, -200.0));
-  objetos.push_back(new GlassPot(100.0, 100.0, 0, 0, 200.0, 50.0, -200.0));
+  //objetos.push_back(new CuboTex(100.0, 100.0, 0, 0, 50.0, 50.0, 50.0));
+  //objetos.push_back(new DiaboloTex(100.0, 200.0, -200.0, 100.0, -200.0));
+  //objetos.push_back(new Suelo(100.0, 100.0, 10, 10));
+  //objetos.push_back(new Grass(100.0, 100.0, 0, 0, 200.0, 50.0, -200.0));
+  //objetos.push_back(new GlassPot(100.0, 100.0, 0, 0, 200.0, 50.0, -200.0));
+  //objetos.push_back(new Poligon(100.0, 6));
+  objetos.push_back(new MPR(50));
 
   /**
   Los objetos opacos van primero, los semitransparentes o transparentes segundos y por ultimo los translucidos

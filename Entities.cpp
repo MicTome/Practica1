@@ -60,6 +60,95 @@ void Triangle::draw()
 	glLineWidth(1);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
+
+Poligon::Poligon(GLdouble r, int n) : Entity()
+{
+	mesh = Mesh::generatePoligon(r, n);
+	rectangle = Mesh::generateRectangleTex(r, 100.0, 0, 0);
+	texture.load("..\\Bmps\\picos.bmp");
+}
+//-------------------------------------------------------------------------
+
+void Poligon::draw()
+{
+	/**
+	Se dibuja el objeto con lineas del color dado y el grosor, por delante y por detras
+	*/
+	
+	
+}
+
+void Poligon::render(dmat4 const& modelViewMat)
+{
+	setMvM(modelViewMat);
+
+	glMatrixMode(GL_MODELVIEW);
+	glEnable(GL_CULL_FACE);
+	//Solo por el frente, por detras se queda invisible (no se ve)
+	glCullFace(GL_BACK);
+	//Enlaza la textura con el objeto
+	
+	glLineWidth(4);
+	glColor3f(0.0, 0.0, 0.0);
+	dmat4 aMat = modelViewMat * modelMat;
+	texture.bind();
+	mesh->draw();
+	texture.unbind();
+	//Se traslada y se crea una de las piramides
+	aMat = translate(aMat, dvec3(0.0, 0.0, 100.0));
+	glLoadMatrixd(value_ptr(aMat));
+	texture.bind();
+	mesh->draw();
+	texture.unbind();
+	aMat = scale(aMat, dvec3(1.0, 0.5, 1.0));
+	aMat = rotate(aMat, radians(90.0), dvec3(1, 0, 0));
+	aMat = translate(aMat, dvec3(0.0, -50.0, -175.0));
+	glLoadMatrixd(value_ptr(aMat));
+	glCullFace(GL_FRONT);
+	texture.bind();
+	rectangle->draw();
+	texture.unbind();
+	aMat = scale(aMat, dvec3(1.0, 1.0, 2.0));
+	aMat = rotate(aMat, radians(-120.0), dvec3(0, 1, 0));
+	aMat = translate(aMat, dvec3(75.0, 0.0, 40.0));
+	glLoadMatrixd(value_ptr(aMat));
+	texture.bind();
+	rectangle->draw();
+	texture.unbind();
+	aMat = translate(aMat, dvec3(75.0, 0.0, -40.0));
+	aMat = rotate(aMat, radians(-120.0), dvec3(0, 1, 0));
+	
+	glLoadMatrixd(value_ptr(aMat));
+	texture.bind();
+	rectangle->draw();
+	texture.unbind();
+
+	aMat = rotate(aMat, radians(-120.0), dvec3(0, 1, 0));
+	aMat = translate(aMat, dvec3(75.0, 0.0, 45.0));
+	glLoadMatrixd(value_ptr(aMat));
+	texture.bind();
+	rectangle->draw();
+	texture.unbind();
+
+	aMat = translate(aMat, dvec3(75.0, 0.0, -42.0));
+	aMat = rotate(aMat, radians(-120.0), dvec3(0, 1, 0));
+	glLoadMatrixd(value_ptr(aMat));
+	texture.bind();
+	rectangle->draw();
+	texture.unbind();
+	aMat = translate(aMat, dvec3(-75.0, 0.0, 45.0));
+	aMat = rotate(aMat, radians(-120.0), dvec3(0, 1, 0));
+	glLoadMatrixd(value_ptr(aMat));
+	texture.bind();
+	rectangle->draw();
+	texture.unbind();
+	glLineWidth(1);
+	
+	glDisable(GL_CULL_FACE);
+	
+}
+
+
 //-------------------------------------------------------------------------
 
 TriangleRGB::TriangleRGB(GLdouble l) : Entity()
@@ -650,6 +739,49 @@ void Grass::render(dmat4 const& modelViewMat)
 	texture.unbind();
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
+}
+
+MPR::MPR(int n) {
+	this->m = 3; //número de puntos del perfil
+	this->n = n;
+	dvec3* perfil = new dvec3[3];
+	perfil[0] = dvec3(0.0, 0.0, 0.0);
+	perfil[1] = dvec3(50.0, 0.0, 0.0);
+	perfil[2] = dvec3(0.0, 100.0, 0.0);
+	this->mesh = Mesh::generaMallaPorRevolucion(m, n, perfil);
+}
+
+void MPR::draw() {
+	mesh->normalize(n, m);
+	dvec3* vertices = mesh->getVertices();
+	dvec4* colors = mesh->getColours();
+	dvec3* normals = mesh->getNormals();
+
+
+	glColor3f(1.0, 0.0, 0.0);
+	if (vertices != nullptr) {
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glVertexPointer(3, GL_DOUBLE, 0, vertices);
+		if (colors != nullptr) {
+			glEnableClientState(GL_COLOR_ARRAY);
+			glColorPointer(4, GL_DOUBLE, 0, colors);
+		}
+		glEnableClientState(GL_NORMAL_ARRAY);
+		glNormalPointer(GL_DOUBLE, 0, normals);
+		// Después del dibujo de los elementos por índices,
+		// se deshabilitan los vertex arrays, como es habitual
+		// Definición de las caras
+		for (int i = 0; i < n; i++){ // Unir el perfil i-ésimo con el (i+1)%n-ésimo
+			for (int j = 0; j < m - 1; j++) { // Esquina inferior-izquierda de una cara
+				int indice = i*m + j;
+				unsigned int stripIndices[] =
+				{ indice, std::fmod((indice + m), (n*m)),
+				std::fmod((indice + m + 1), (n*m)), indice + 1 };
+				glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_INT, stripIndices);
+				// o GL_POLYGON, si se quiere las caras con relleno
+			}
+		}
+	}
 }
 
 /**

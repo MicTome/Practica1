@@ -109,7 +109,7 @@ void key(unsigned char key, int x, int y)
 	*/
   Texture tex;
   bool need_redisplay = true;
-  DiaboloTex* dia = scene.getDiaboloTex();
+  //DiaboloTex* dia = scene.getDiaboloTex();
   switch (key) {
   case 27:  // Escape key 
     glutLeaveMainLoop();  // Freeglut's sentence for stopping glut's main loop 
@@ -127,7 +127,7 @@ void key(unsigned char key, int x, int y)
 	  camera.setAZ();
 	  break;
   case 'A':
-	  dia->rotateZ();
+//	  dia->rotateZ();
 	  break;
   case 'a':
 	  /**

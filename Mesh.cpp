@@ -1,6 +1,9 @@
 #include "Mesh.h"
+#include "Math.h"
 
 using namespace glm;
+
+#define PI 3.1415926
 
 //-------------------------------------------------------------------------
 
@@ -76,6 +79,28 @@ Mesh * Mesh::generateTriangle(GLdouble r)
 	m->vertices[1] = dvec3(r*cos(radians(90.0 + 120.0)), r*sin(radians(90.0 + 120.0)), 0);
 	m->vertices[2] = dvec3(r*cos(radians(90.0 + 120.0 + 120.0)), r*sin(radians(90.0 + 120.0 + 120.0)), 0.0);
 
+	return m;
+}
+
+Mesh * Mesh::generatePoligon(GLdouble r, int n)
+{
+	Mesh* m = new Mesh();
+	m->type = GL_TRIANGLE_FAN;
+	m->numVertices = n+1;
+	m->vertices = new dvec3[m->numVertices];
+	m->texCoords = new dvec2[m->numVertices];
+	for (int i = 0; i < m->numVertices; i++){
+		double angle = i * 2 * 3.14 / n;
+		m->vertices[i] = dvec3(r*cos(angle), r*sin(angle), 0.0);
+		
+	}
+	m->texCoords[0] = dvec2(0, 0);
+	m->texCoords[1] = dvec2(0, 1);
+	m->texCoords[2] = dvec2(0, 0);
+	m->texCoords[3] = dvec2(0, 1);
+	m->texCoords[4] = dvec2(0, 0);
+	m->texCoords[5] = dvec2(0, 1);
+	m->texCoords[6] = dvec2(0, 0);
 	return m;
 }
 
@@ -327,4 +352,52 @@ Mesh* Mesh::generateTriPyramidTex(GLdouble r, GLdouble h)
 	m->texCoords[4] = dvec2(1, 0);
 	return m;
 
+}
+
+
+Mesh* Mesh::generaMallaPorRevolucion(int m, int n, dvec3* perfil){
+	Mesh* mesh = new Mesh();
+	mesh->numVertices = n*m;
+	mesh->vertices = new dvec3[mesh->numVertices];
+	// Vertices de la malla
+	for (int i = 0; i<n; i++){ // Generar el perfil i-ésimo
+		double theta = i * 2 * PI / n;
+		double c = cos(theta);
+		double s = sin(theta);
+		// R_y es la matriz de rotación sobre el eje Y
+		for (int j = 0; j<m; j++) {
+			int indice = i*m + j;
+			// Transformar el punto j-ésimo del perfil original
+			double x = c*perfil[j][0] + s*perfil[j][2];
+			double z = -s*perfil[j][0] + c*perfil[j][2];
+			dvec3 p = dvec3(x, perfil[j].y, z);
+			mesh->vertices[indice] = p;
+		}
+	}
+	return mesh;
+}
+
+void Mesh::normalize(int mm, int nn){
+	normals = new dvec3[numVertices];
+	// Se ponen al vector nulo todas las componentes de normals
+	for (int i = 0; i < nn; i++)
+	for (int j = 0; j < mm - 1; j++) {
+		int indice = i*mm + j;
+		int i0 = (indice + mm) % (nn *mm);
+		int i1 = (indice + mm + 1) % (nn *mm);
+		int i2 = indice + 1;
+		// Por cada cara a la que pertenece el vértice índice,
+		// se determinan 3 índices i0, i1, i2 de 3 vértices consecutivos de esa cara
+		dvec3 aux0 = vertices[indice]; //vértice de i0; dvec3 aux1 = ...; dvec3 aux2 = ...;
+		dvec3 aux1 = vertices[i0];
+		dvec3 aux2 = vertices[i1];
+		dvec3 norm = glm::cross(aux1 - aux0, aux2 - aux1);
+		//dvec3 norm = glm::cross(aux2 - aux1, aux0 - aux1);
+		normals[i0] += norm; 
+		normals[i1] += norm;
+		normals[i2] += norm;
+	}
+	//Se normalizan todos los vectores normales
+	for (int i = 0; i < normals->length(); i++)
+		normals[i] = glm::normalize(normals[i]);
 }

@@ -48,6 +48,17 @@ public:
 	virtual void draw();
 };
 
+class Poligon : public Entity
+{
+public:
+	Poligon(GLdouble r, int n);
+	virtual void render(glm::dmat4 const& modelViewMat);
+	~Poligon() { };
+	virtual void draw();
+protected:
+	Mesh* rectangle = nullptr;
+};
+
 class TriangleRGB : public Entity
 {
 public:
@@ -219,6 +230,17 @@ private:
 	GLdouble translateX;
 	GLdouble translateY;
 	GLdouble translateZ;
+};
+
+class MPR : public Entity
+{
+public:
+	MPR(int n);
+	~MPR() { };
+	virtual void draw();
+private:
+	int m;
+	int n;
 };
 
 #endif //_H_Entities_H_
