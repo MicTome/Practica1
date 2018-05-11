@@ -243,4 +243,16 @@ private:
 	int n;
 };
 
+class Hipotrocoide : public Entity
+{
+public:
+	Hipotrocoide(int nP, int nQ, GLfloat a, GLfloat b, GLfloat c);
+	~Hipotrocoide() { };
+	virtual void draw();
+private:
+	int nP;
+	int nQ;
+	GLfloat a, b, c;
+};
+
 #endif //_H_Entities_H_

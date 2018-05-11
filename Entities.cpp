@@ -741,7 +741,7 @@ void Grass::render(dmat4 const& modelViewMat)
 	glDepthMask(GL_TRUE);
 }
 
-MPR::MPR(int n) {
+MPR::MPR(int n) : Entity() {
 	this->m = 3; //número de puntos del perfil
 	this->n = n;
 	dvec3* perfil = new dvec3[3];
@@ -752,9 +752,9 @@ MPR::MPR(int n) {
 }
 
 void MPR::draw() {
-	mesh->normalize(n, m);
 	dvec3* vertices = mesh->getVertices();
 	dvec4* colors = mesh->getColours();
+	mesh->normalize(m, n);
 	dvec3* normals = mesh->getNormals();
 
 
@@ -781,7 +781,27 @@ void MPR::draw() {
 				// o GL_POLYGON, si se quiere las caras con relleno
 			}
 		}
+		glDisableClientState(GL_VERTEX_ARRAY);
 	}
+}
+
+Hipotrocoide::Hipotrocoide(int nP, int nQ, GLfloat a, GLfloat b, GLfloat c) : Entity()
+{
+	this->nP = nP;
+	this->nQ = nQ;
+	this->a = a;
+	this->b = b;
+	this->c = c;
+	mesh = new HipoMesh(this->nP, this->nQ, this->a, this->b, this->c);
+}
+
+void Hipotrocoide::draw() {
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glColor3f(0.0, 0.0, 1.0);
+	glLineWidth(2);
+	this->mesh->draw();
+	glLineWidth(1);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 /**

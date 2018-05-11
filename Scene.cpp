@@ -9,7 +9,7 @@ void Scene::init()
   glEnable(GL_DEPTH_TEST);  
 
   
-  camera->setAZ();
+  //camera->setAZ();
     
   // lights
   glClearColor(0.6f, 0.7f, 0.8f, 1.0); // Fondo azul (o el que prefieras)
@@ -45,13 +45,15 @@ void Scene::init()
   //objetos.push_back(new Poliespiral(0.0, 0.0, 0.0, 89.5, 0.5, 0.5, 100));
   //objetos.push_back(new Poliespiral(0.0, 0.0, 0.0, 45.0, 1.0, 1.0, 50));
   //objetos.push_back(new RectanguloTex(100.0, 100.0, 0, 0));
-  //objetos.push_back(new CuboTex(100.0, 100.0, 0, 0, 50.0, 50.0, 50.0));
+  //objetos.push_back(new CuboTex(50.0, 50.0, 0, 0, 50.0, 50.0, 50.0));
   //objetos.push_back(new DiaboloTex(100.0, 200.0, -200.0, 100.0, -200.0));
   //objetos.push_back(new Suelo(100.0, 100.0, 10, 10));
   //objetos.push_back(new Grass(100.0, 100.0, 0, 0, 200.0, 50.0, -200.0));
   //objetos.push_back(new GlassPot(100.0, 100.0, 0, 0, 200.0, 50.0, -200.0));
   //objetos.push_back(new Poligon(100.0, 6));
-  objetos.push_back(new MPR(50));
+  //objetos.push_back(new MPR(50));
+  objetos.push_back(new Hipotrocoide(6, 50, 7, 4, 2));
+
 
   /**
   Los objetos opacos van primero, los semitransparentes o transparentes segundos y por ultimo los translucidos
