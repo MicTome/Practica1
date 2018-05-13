@@ -419,7 +419,7 @@ HipoMesh::HipoMesh(int nP, int nQ, GLfloat a, GLfloat b, GLfloat c) : Mesh() {
 	GLdouble t = 0.0;
 	cargaMatriz(t);
 	creaVerticesIniciales();
-	GLdouble saltoEntreRodajas = 5.0;
+	GLdouble saltoEntreRodajas = 0.25;
 	for (int i = 0; i<nQ; i++) {
 		t += saltoEntreRodajas;
 		cargaMatriz(t);
@@ -439,31 +439,15 @@ void HipoMesh::creaBase(){
 
 void HipoMesh::creaVerticesIniciales(){
 	for (int i = 0; i < nP; i++){
-		double x = m[0][0] * base[i].x + m[0][1] * base[i].y + m[0][2] * base[i].z + m[0][3] * 1.0;
-		double y = m[1][0] * base[i].x + m[1][1] * base[i].y + m[1][2] * base[i].z + m[1][3] * 1.0;
-		double z = m[2][0] * base[i].x + m[2][1] * base[i].y + m[2][2] * base[i].z + m[2][3] * 1.0;
-		double p = m[3][0] * base[i].x + m[3][1] * base[i].y + m[3][2] * base[i].z + m[3][3] * 1.0;
-		vertices[i] = dvec3(x, y, z);
-	/*double x = N.x * base[i].x + B.x * base[i].y + T.x * base[i].z + C.x;
-	double y = N.y * base[i].x + B.y * base[i].y + T.y * base[i].z + C.y;
-	double z = N.z * base[i].x + B.z * base[i].y + T.z * base[i].z + C.z;
-	vertices[i] = dvec3(x, y, z);*/
+		vertices[i] = multiplicar(i);
 	}
 }
 
 void HipoMesh::creaRodaja(int v){
 	for (int i = 0; i < nP; i++){
 		int indice = v*nP + i;
-		dvec4 aux = multiplicar(indice);
-		dvec4 aux1 = multiplicar(indice+1);
-		dvec4 aux2 = multiplicar(indice+nP+1);
-		dvec4 aux3 = multiplicar(indice+nP);
-		vertices[indice] = aux;
-		vertices[indice+1] = aux1;
-		vertices[indice+2] = aux2;
-		vertices[indice+3] = aux3;
+		vertices[indice] = multiplicar(i);
 	}
-	//vertices[nP] = vertices[0];
 }
 
 /**
@@ -484,30 +468,72 @@ void HipoMesh::cargaMatriz(GLdouble t){
 	dvec3 C = curva(t);
 	dvec3 T = glm::normalize(derivada(t));
 	dvec3 B = glm::normalize(cross(derivada(t), segundaDerivada(t)));
-	dvec3 N = cross(B, T);
+	dvec3 N = cross(T, B);
 	m = dmat4(dvec4(N, 0.0), dvec4(B, 0.0), dvec4(T, 0.0), dvec4(C, 1.0));
 }
 
 void HipoMesh::draw(){
 	glColor3f(1.0, 0.0, 0.0);
+	normalize();
 	if (vertices != nullptr) {
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glVertexPointer(3, GL_DOUBLE, 0, vertices);
+		glEnableClientState(GL_NORMAL_ARRAY);
+		glNormalPointer(GL_DOUBLE, 0, normals);
 		// Después del dibujo de los elementos por índices,
 		// se deshabilitan los vertex arrays, como es habitual
 		// Definición de las caras
 		for (int i = 0; i < nQ; i++){ // Unir el perfil i-ésimo con el (i+1)%n-ésimo
 			for (int j = 0; j < nP; j++) { // Esquina inferior-izquierda de una cara
 				int indice = i*nP + j;
-				unsigned int stripIndices[] =
-				{ indice, indice + 1,
-				indice + nP + 1, indice + nP };
+				unsigned int stripIndices[4];
+				if (j == nP - 1){
+					stripIndices[0] = indice;
+					stripIndices[3] = (indice + nP) % numVertices;
+					stripIndices[2] = (indice+1) % numVertices;
+					stripIndices[1] = indice - nP + 1;
+				}
+				else{
+					stripIndices[0] = indice;
+					stripIndices[3] = (indice + nP)% numVertices;
+					stripIndices[2] = (indice + 1 + nP)% numVertices;
+					stripIndices[1] = indice + 1;
+				}
 				glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_INT, stripIndices);
 				// o GL_POLYGON, si se quiere las caras con relleno
 			}
 		}
 		glDisableClientState(GL_VERTEX_ARRAY);
 	}
+}
+
+void HipoMesh::normalize(){
+	normals = new dvec3[numVertices];
+	// Se ponen al vector nulo todas las componentes de normals
+	for (int i = 0; i < numVertices; i++)
+		normals[i] = dvec3(0.0, 0.0, 0.0);
+
+	for (int i = 0; i < nQ; i++)
+	for (int j = 0; j < nP - 1; j++) {
+		int indice = i*nP + j;
+		int i0 = (indice + nP) % numVertices;;
+		int i1 = (indice + 1 + nP) % numVertices;;
+		int i2 = indice + 1;
+		// Por cada cara a la que pertenece el vértice índice,
+		// se determinan 3 índices i0, i1, i2 de 3 vértices consecutivos de esa cara
+		dvec3 aux0 = vertices[indice]; //vértice de i0; dvec3 aux1 = ...; dvec3 aux2 = ...;
+		dvec3 aux1 = vertices[i0];
+		dvec3 aux2 = vertices[i2];
+		//dvec3 norm = glm::cross(aux1 - aux0, aux2 - aux1);
+		dvec3 norm = glm::cross(aux2 - aux1, aux0 - aux1);
+		normals[indice + 1] += norm;
+		normals[i0] += norm;
+		normals[i1] += norm;
+		normals[i2] += norm;
+	}
+	//Se normalizan todos los vectores normales
+	for (int i = 0; i < numVertices; i++)
+		normals[i] = glm::normalize(normals[i]);
 }
 
 dvec3 HipoMesh::curva(GLdouble t){
@@ -522,10 +548,10 @@ dvec3 HipoMesh::segundaDerivada(GLdouble t){
 	return dvec3(-(a-b)*cos(t) - c*((a-b)/b)*((a-b)/b)*cos(t*((a-b)/b)), 0, -(a-b)*sin(t) + c*((a-b)/b)*((a-b)/b)*sin(t*((a-b)/b)));
 }
 
-dvec4 HipoMesh::multiplicar(int i){
-	double x = m[0][0] * base[i].x + m[0][1] * base[i].y + m[0][2] * base[i].z + m[0][3] * 1.0;
-	double y = m[1][0] * base[i].x + m[1][1] * base[i].y + m[1][2] * base[i].z + m[1][3] * 1.0;
-	double z = m[2][0] * base[i].x + m[2][1] * base[i].y + m[2][2] * base[i].z + m[2][3] * 1.0;
-	double p = m[3][0] * base[i].x + m[3][1] * base[i].y + m[3][2] * base[i].z + m[3][3] * 1.0;
-	return dvec4(x, y, z, p);
+dvec3 HipoMesh::multiplicar(int i){
+	double x = m[0][0] * base[i].x + m[1][0] * base[i].y + m[2][0] * base[i].z + m[3][0] * 1.0;
+	double y = m[0][1] * base[i].x + m[1][1] * base[i].y + m[2][1] * base[i].z + m[3][1] * 1.0;
+	double z = m[0][2] * base[i].x + m[1][2] * base[i].y + m[2][2] * base[i].z + m[3][2] * 1.0;
+	//double p = m[0][3] * base[i].x + m[1][3] * base[i].y + m[2][3] * base[i].z + m[3][3] * 1.0;
+	return dvec3(x, y, z);
 }

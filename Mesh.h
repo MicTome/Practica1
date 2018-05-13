@@ -52,11 +52,11 @@ public:
 	void creaVerticesIniciales(); // Añade los primeros nP vértices
 	void creaRodaja(int v); // Añade nP nuevos vértices, a partir de la componente v
 	void cargaMatriz(GLdouble t); // Define la matriz m para t
-	void normalize(int mm, int nn);
+	void normalize();
 	glm::dvec3 curva(GLdouble t);
 	glm::dvec3 derivada(GLdouble t);
 	glm::dvec3 segundaDerivada(GLdouble t);
-	glm::dvec4 HipoMesh::multiplicar(int i);
+	glm::dvec3 HipoMesh::multiplicar(int i);
 	virtual void draw();
 protected:
 	int nP; // Número de lados del polígono que aproxima la circunferencia que define el tubo

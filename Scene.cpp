@@ -52,7 +52,7 @@ void Scene::init()
   //objetos.push_back(new GlassPot(100.0, 100.0, 0, 0, 200.0, 50.0, -200.0));
   //objetos.push_back(new Poligon(100.0, 6));
   //objetos.push_back(new MPR(50));
-  objetos.push_back(new Hipotrocoide(6, 50, 7, 4, 2));
+  objetos.push_back(new Hipotrocoide(20, 400, 7, 4, 2));
 
 
   /**

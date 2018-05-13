@@ -796,12 +796,7 @@ Hipotrocoide::Hipotrocoide(int nP, int nQ, GLfloat a, GLfloat b, GLfloat c) : En
 }
 
 void Hipotrocoide::draw() {
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glColor3f(0.0, 0.0, 1.0);
-	glLineWidth(2);
 	this->mesh->draw();
-	glLineWidth(1);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 /**
