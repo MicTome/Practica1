@@ -354,7 +354,9 @@ Mesh* Mesh::generateTriPyramidTex(GLdouble r, GLdouble h)
 
 }
 
-
+/**Metodo dado en las diapositivas, da una figura por revolucion dado un perfil perfil,
+unas rodajas n y el numero de vertices del perfil como m
+*/
 Mesh* Mesh::generaMallaPorRevolucion(int m, int n, dvec3* perfil){
 	Mesh* mesh = new Mesh();
 	mesh->numVertices = n*m;
@@ -377,6 +379,8 @@ Mesh* Mesh::generaMallaPorRevolucion(int m, int n, dvec3* perfil){
 	return mesh;
 }
 
+/**Normalizacion de las caras dado mm vertices del perfil y nn rodajas
+*/
 void Mesh::normalize(int mm, int nn){
 	normals = new dvec3[numVertices];
 	// Se ponen al vector nulo todas las componentes de normals
@@ -406,27 +410,39 @@ void Mesh::normalize(int mm, int nn){
 		normals[i] = glm::normalize(normals[i]);
 }
 
+/**Clase heredada de Mesh. Contiene el algoritmo base de la hipotrocoide
+a,b,c son valores para la curva
+nP es el numero de lados del poligono que forman la curva
+nQ es el numero de rodajas de la curva
+*/
 HipoMesh::HipoMesh(int nP, int nQ, GLfloat a, GLfloat b, GLfloat c) : Mesh() {
 	this->a = a;
 	this->b = b;
 	this->c = c;
 	this->nP = nP;
 	this->nQ = nQ;
+	//vertices totales rodajas por vertices de poligono
 	numVertices = nP * nQ;
 	vertices = new dvec3[numVertices];
 	normals = new dvec3[numVertices];
+	//crea el poligono que sera la forma de la curva
 	creaBase();
 	GLdouble t = 0.0;
+	//cargamos la matriz de modelado **explicacion en el metodo
 	cargaMatriz(t);
+	//generacion de primeros vertices de la curva a partir de la base
 	creaVerticesIniciales();
-	GLdouble saltoEntreRodajas = 0.25;
+	GLdouble saltoEntreRodajas = 0.5;//0.1
 	for (int i = 0; i<nQ; i++) {
 		t += saltoEntreRodajas;
 		cargaMatriz(t);
+		//*explicacion en el metodo
 		creaRodaja(i);
 	}
 }
 
+/**Metodo que crea la base que forma el contorno de la curva
+*/
 void HipoMesh::creaBase(){
 	base = new dvec3[nP];
 	GLdouble r = 0.5;
@@ -436,17 +452,22 @@ void HipoMesh::creaBase(){
 	}
 }
 
-
+/**Primeros vertices de la curva
+*/
 void HipoMesh::creaVerticesIniciales(){
 	for (int i = 0; i < nP; i++){
-		vertices[i] = multiplicar(i);
+		vertices[i] = multiplicar(i);//*5
 	}
 }
 
+/**Rodajas de la curva. 
+indice sirve para que no se encuenrte siempre dentro de la misma rodaja.
+v es el numero de la rodaja en la que se encuentra
+*/
 void HipoMesh::creaRodaja(int v){
 	for (int i = 0; i < nP; i++){
 		int indice = v*nP + i;
-		vertices[indice] = multiplicar(i);
+		vertices[indice] = multiplicar(i);//*5
 	}
 }
 
@@ -464,6 +485,13 @@ Dar la cara entre bases, esta formada por rectangulos para la construccion de la
 |0 0 0 1|
 en la tercera columna de la matriz, 3 datos y 0
 */
+/**Carga la matriz y crea una matriz dependiendo de t y las formulas
+la mattriz se queda como
+|Nx Ny Nz 0|
+|Bx By Bz 0|
+|Tx Ty Tz 0|
+|Cx Cy Cz 1|
+*/
 void HipoMesh::cargaMatriz(GLdouble t){
 	dvec3 C = curva(t);
 	dvec3 T = glm::normalize(derivada(t));
@@ -471,9 +499,10 @@ void HipoMesh::cargaMatriz(GLdouble t){
 	dvec3 N = cross(T, B);
 	m = dmat4(dvec4(N, 0.0), dvec4(B, 0.0), dvec4(T, 0.0), dvec4(C, 1.0));
 }
-
+/**Esto es lo que se hace en todos los objetos, pero en esta ocasion esta aqui dentro para formar las caras con los for
+Se usa una version disntita a la mencionada por el profesor y que esta comentada mas arriba
+*/
 void HipoMesh::draw(){
-	glColor3f(1.0, 0.0, 0.0);
 	normalize();
 	if (vertices != nullptr) {
 		glEnableClientState(GL_VERTEX_ARRAY);
@@ -483,10 +512,11 @@ void HipoMesh::draw(){
 		// Después del dibujo de los elementos por índices,
 		// se deshabilitan los vertex arrays, como es habitual
 		// Definición de las caras
-		for (int i = 0; i < nQ; i++){ // Unir el perfil i-ésimo con el (i+1)%n-ésimo
+		for (int i = 0; i < nQ-1; i++){ // Unir el perfil i-ésimo con el (i+1)%n-ésimo
 			for (int j = 0; j < nP; j++) { // Esquina inferior-izquierda de una cara
 				int indice = i*nP + j;
 				unsigned int stripIndices[4];
+				//ultima cara de cada rodaja 50611 para un poligino de 6 caras
 				if (j == nP - 1){
 					stripIndices[0] = indice;
 					stripIndices[3] = (indice + nP) % numVertices;
@@ -494,31 +524,42 @@ void HipoMesh::draw(){
 					stripIndices[1] = indice - nP + 1;
 				}
 				else{
+					//primera cara de la rodaja 0176 para un poligono de 6 caras
 					stripIndices[0] = indice;
 					stripIndices[3] = (indice + nP)% numVertices;
 					stripIndices[2] = (indice + 1 + nP)% numVertices;
 					stripIndices[1] = indice + 1;
 				}
-				glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_INT, stripIndices);
-				// o GL_POLYGON, si se quiere las caras con relleno
+				glDrawElements(GL_LINE_STRIP, 4, GL_UNSIGNED_INT, stripIndices);
+				// o GL_POLYGON, si se quiere las caras con relleno/GL_LINE_STRIP
 			}
 		}
 		glDisableClientState(GL_VERTEX_ARRAY);
 	}
 }
 
+/**Normales de la hipotrocoide. Puede que este bien, hay algo raro
+*/
 void HipoMesh::normalize(){
 	normals = new dvec3[numVertices];
 	// Se ponen al vector nulo todas las componentes de normals
 	for (int i = 0; i < numVertices; i++)
 		normals[i] = dvec3(0.0, 0.0, 0.0);
 
-	for (int i = 0; i < nQ; i++)
+	for (int i = 0; i < nQ-1; i++)
 	for (int j = 0; j < nP - 1; j++) {
 		int indice = i*nP + j;
 		int i0 = (indice + nP) % numVertices;;
-		int i1 = (indice + 1 + nP) % numVertices;;
-		int i2 = indice + 1;
+		int i1 = 0;
+		int i2 = 0;
+		if (j == nP - 1){
+			i1 = (indice + 1) % numVertices;
+			i2 = indice - nP + 1;
+		}
+		else{
+			i1 = (indice + 1 + nP) % numVertices;;
+			i2 = indice + 1;
+		}
 		// Por cada cara a la que pertenece el vértice índice,
 		// se determinan 3 índices i0, i1, i2 de 3 vértices consecutivos de esa cara
 		dvec3 aux0 = vertices[indice]; //vértice de i0; dvec3 aux1 = ...; dvec3 aux2 = ...;
@@ -548,6 +589,9 @@ dvec3 HipoMesh::segundaDerivada(GLdouble t){
 	return dvec3(-(a-b)*cos(t) - c*((a-b)/b)*((a-b)/b)*cos(t*((a-b)/b)), 0, -(a-b)*sin(t) + c*((a-b)/b)*((a-b)/b)*sin(t*((a-b)/b)));
 }
 
+/**Multiplicador de la matriz por la base
+Multiplica de forma vertical, es decir, todas las x de la matriz por la base para el valor x. Lo mismo para y y z
+*/
 dvec3 HipoMesh::multiplicar(int i){
 	double x = m[0][0] * base[i].x + m[1][0] * base[i].y + m[2][0] * base[i].z + m[3][0] * 1.0;
 	double y = m[0][1] * base[i].x + m[1][1] * base[i].y + m[2][1] * base[i].z + m[3][1] * 1.0;

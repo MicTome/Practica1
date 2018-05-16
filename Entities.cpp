@@ -9,6 +9,8 @@ using namespace glm;
 void Entity::render(dmat4 const& modelViewMat) 
 { 
 	setMvM(modelViewMat); 
+	//da el color si le has dado alguno
+	glColor3f(re,gr,bl);
 	draw(); 
 }
 //-------------------------------------------------------------------------
@@ -18,6 +20,16 @@ void Entity::draw()
   if (mesh != nullptr) 
     mesh -> draw(); 
 }
+
+/**Metodo para cambiar el color de la matriz de Entity
+*/
+void Entity::setColor(GLfloat x, GLfloat y, GLfloat z)
+{
+	re = x;
+	gr = y;
+	bl = z;
+}
+
 //-------------------------------------------------------------------------
 
 void Entity::setMvM(dmat4 const& modelViewMat)
@@ -26,6 +38,7 @@ void Entity::setMvM(dmat4 const& modelViewMat)
 	dmat4 aMat = modelViewMat * modelMat;
 	glLoadMatrixd(value_ptr(aMat));
 }
+
 //-------------------------------------------------------------------------
 
 EjesRGB::EjesRGB(GLdouble l): Entity() 
@@ -741,6 +754,8 @@ void Grass::render(dmat4 const& modelViewMat)
 	glDepthMask(GL_TRUE);
 }
 
+/**Cono por revolucion. El perfil dibuja el cono
+*/
 MPR::MPR(int n) : Entity() {
 	this->m = 3; //número de puntos del perfil
 	this->n = n;
@@ -784,7 +799,10 @@ void MPR::draw() {
 		glDisableClientState(GL_VERTEX_ARRAY);
 	}
 }
-
+/**nP numero de lados del poligono
+nQ numero de rodajas
+a, b, c valores de la curva
+*/
 Hipotrocoide::Hipotrocoide(int nP, int nQ, GLfloat a, GLfloat b, GLfloat c) : Entity()
 {
 	this->nP = nP;
@@ -792,12 +810,188 @@ Hipotrocoide::Hipotrocoide(int nP, int nQ, GLfloat a, GLfloat b, GLfloat c) : En
 	this->a = a;
 	this->b = b;
 	this->c = c;
+	re = 1.0;
+	gr = 0.0;
+	bl = 0.0;
+	this->setColor(re, gr, bl);
 	mesh = new HipoMesh(this->nP, this->nQ, this->a, this->b, this->c);
+	
 }
 
 void Hipotrocoide::draw() {
+	
+	//glColor3f(re, gr, bl);
 	this->mesh->draw();
 }
+
+Sphere::Sphere(GLdouble l, int meridianos, int paralelos) : QuadricEntity() {
+	r = l;
+	m = meridianos;
+	p = paralelos;
+	sphere = gluNewQuadric();
+	//gluQuadricTexture(sphere, GLU_TRUE);
+	//texture.load("..\\Bmps\\window.bmp");
+}
+
+void Sphere::draw() {
+	//this->setColor(res, grs, bls);
+	//glColor3f(re, gr, bl);
+	gluQuadricDrawStyle(sphere, GLU_FILL);
+	//texture.bind(GL_MODULATE);
+	gluSphere(sphere, r, m, p);
+	//texture.unbind();
+}
+
+Cylinder::Cylinder(GLdouble baseRadio, GLdouble topRadio, GLdouble altura, int lados, int rodajas) : QuadricEntity() {
+	br = baseRadio;
+	tr = topRadio;
+	h = altura;
+	l = lados;
+	r = rodajas;
+	cylinder = gluNewQuadric();
+	//gluQuadricTexture(sphere, GLU_TRUE);
+	//texture.load("..\\Bmps\\window.bmp");
+}
+
+void Cylinder::draw() {
+	//this->setColor(res, grs, bls);
+	//glColor3f(re, gr, bl);
+	gluQuadricDrawStyle(cylinder, GLU_FILL);
+	//texture.bind(GL_MODULATE);
+	gluCylinder(cylinder, br, tr, h, l, r);
+	//texture.unbind();
+}
+
+Disk::Disk(GLdouble intRadio, GLdouble extRadio, int lados, int anillos) : QuadricEntity() {
+	ir = intRadio;
+	or = extRadio;
+	l = lados;
+	r = anillos;
+	disk = gluNewQuadric();
+	//gluQuadricTexture(disk, GLU_TRUE);
+	//texture.load("..\\Bmps\\window.bmp");
+}
+
+void Disk::draw() {
+	//this->setColor(res, grs, bls);
+	//glColor3f(re, gr, bl);
+	gluQuadricDrawStyle(disk, GLU_FILL);
+	//texture.bind(GL_MODULATE);
+	gluDisk(disk, ir, or, l, r);
+	//texture.unbind();
+}
+
+PartialDisk::PartialDisk(GLdouble intRadio, GLdouble extRadio, int lados, int anillos, GLdouble startAngle, GLdouble sweepAngle) : QuadricEntity() {
+	ir = intRadio;
+	or = extRadio;
+	l = lados;
+	r = anillos;
+	sta = startAngle;
+	swa = sweepAngle;
+	pdisk = gluNewQuadric();
+	//gluQuadricTexture(pdisk, GLU_TRUE);
+	//texture.load("..\\Bmps\\window.bmp");
+}
+
+void PartialDisk::draw() {
+	//this->setColor(res, grs, bls);
+	//glColor3f(re, gr, bl);
+	gluQuadricDrawStyle(pdisk, GLU_FILL);
+	//texture.bind(GL_MODULATE);
+	gluPartialDisk(pdisk, ir, or, l, r, sta, swa);
+	//texture.unbind();
+}
+
+void CompoundEntity::draw(){
+	
+}
+
+/**Esta clase sirve como array del resto de entidades menores.
+render dibuja la matriz de cada uno 
+**Mirar al principio de los comentarios largos para ver la estructura de herencias**
+*/
+void CompoundEntity::render(dmat4 const& modelViewMat){
+	setMvM(modelViewMat);
+	glMatrixMode(GL_MODELVIEW);
+	dmat4 aMat = modelViewMat * modelMat;
+	for each (Entity* it in entities) {
+		it->render(aMat);
+	}
+}
+
+/**Circunfenrencia rota para la cabeza
+el perfil dibuja una curva hecha a mano
+*/
+RevolutionsShpere::RevolutionsShpere(int n) : Entity() {
+	this->m = 22; //número de puntos del perfil
+	this->n = n;
+	dvec3* perfil = new dvec3[22];
+	perfil[0] = dvec3(0.0, 0.0, 0.0);
+	perfil[1] = dvec3(45.0, 0.0, 0.0);
+	perfil[2] = dvec3(50.0, 5.0, 0.0);
+	perfil[3] = dvec3(50.0, 12.0, 0.0);
+	perfil[4] = dvec3(49.5, 17.0, 0.0);
+	perfil[5] = dvec3(49.0, 19.0, 0.0);
+	perfil[6] = dvec3(48.5, 21.0, 0.0);
+	perfil[7] = dvec3(47.2, 23.0, 0.0);
+	perfil[8] = dvec3(46.7, 25.0, 0.0);
+	perfil[7] = dvec3(46.2, 27.0, 0.0);
+	perfil[8] = dvec3(45.0, 29.0, 0.0);
+	perfil[9] = dvec3(43.8, 31.0, 0.0);
+	perfil[10] = dvec3(42.0, 33.0, 0.0);
+	perfil[11] = dvec3(40.0, 35.0, 0.0);
+	perfil[12] = dvec3(37.5, 37.0, 0.0);
+	perfil[13] = dvec3(35.0, 39.0, 0.0);
+	perfil[14] = dvec3(32.5, 41.0, 0.0);
+	perfil[15] = dvec3(29.5, 43.0, 0.0);
+	perfil[16] = dvec3(25.0, 45.0, 0.0);
+	perfil[17] = dvec3(20.0, 47.0, 0.0);
+	perfil[18] = dvec3(15.0, 49.0, 0.0);
+	perfil[19] = dvec3(9.5, 50.0, 0.0);
+	perfil[20] = dvec3(4.0, 51.0, 0.0);
+	perfil[21] = dvec3(0.0, 51.5, 0.0);
+	this->mesh = Mesh::generaMallaPorRevolucion(m, n, perfil);
+}
+
+void RevolutionsShpere::draw() {
+	dvec3* vertices = mesh->getVertices();
+	mesh->normalize(m, n);
+	//this->setColor(res, grs, bls);
+	//glColor3f(re, gr, bl);
+	dvec3* normals = mesh->getNormals();
+	if (vertices != nullptr) {
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glVertexPointer(3, GL_DOUBLE, 0, vertices);
+
+		glEnableClientState(GL_NORMAL_ARRAY);
+		glNormalPointer(GL_DOUBLE, 0, normals);
+		// Después del dibujo de los elementos por índices,
+		// se deshabilitan los vertex arrays, como es habitual
+		// Definición de las caras
+		for (int i = 0; i < n; i++){ // Unir el perfil i-ésimo con el (i+1)%n-ésimo
+			for (int j = 0; j < m - 1; j++) { // Esquina inferior-izquierda de una cara
+				int indice = i*m + j;
+				unsigned int stripIndices[] =
+				{ indice, std::fmod((indice + m), (n*m)),
+				std::fmod((indice + m + 1), (n*m)), indice + 1 };
+				glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_INT, stripIndices);
+				// o GL_POLYGON, si se quiere las caras con relleno
+			}
+		}
+		glDisableClientState(GL_VERTEX_ARRAY);
+	}
+}
+
+/**En cuanto a la organizacion de las clases
+
+Padre: Entity
+Hijos de Etity: CompoundEntity, QuadricEntity, el resto
+Hijos de CompundEntity: Scene
+Hijos de QuadricEntity: Shpere, Cylinder, Disk, PartialDisk
+
+*/
+
+
 
 /**
 Para transparencias se utiliza la componente Alpha de los colores

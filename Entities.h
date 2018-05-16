@@ -4,6 +4,7 @@
 
 #include <GL/freeglut.h>
 #include <glm.hpp>
+#include <vector>
 #include "Mesh.h"
 #include "Texture.h"
 
@@ -14,16 +15,20 @@ class Entity
 public:
   Entity() : modelMat(1.0) { };
   virtual ~Entity() { delete mesh; };
-
+  void setColor(GLfloat x, GLfloat y, GLfloat z);
   virtual void render(glm::dmat4 const& modelViewMat);
-  
+  glm::dmat4 modelMat;
 protected:
 	/**
 	Variable para añadir texturas
 	*/
   Texture texture;
+  //colores
+  GLfloat re;
+  GLfloat bl;
+  GLfloat gr;
   Mesh* mesh = nullptr;
-  glm::dmat4 modelMat;
+  
   virtual void draw();
   virtual void setMvM(glm::dmat4 const& modelViewMat);
 };
@@ -253,6 +258,98 @@ private:
 	int nP;
 	int nQ;
 	GLfloat a, b, c;
+	GLfloat res;
+	GLfloat grs;
+	GLfloat bls;
+};
+
+
+class QuadricEntity : public Entity
+{
+public:
+	QuadricEntity(){};
+	~QuadricEntity(){};
+};
+
+
+class Sphere : public QuadricEntity
+{
+public:
+	Sphere(GLdouble l, int meridianos, int paralelos);
+	virtual void draw();
+private:
+	GLdouble r;
+	int m;
+	int p;
+	GLUquadricObj * sphere;
+};
+
+class Cylinder : public QuadricEntity
+{
+public:
+	Cylinder(GLdouble baseRadio, GLdouble topRadio, GLdouble altura, int lados, int rodajas);
+	virtual void draw();
+private:
+	int l;
+	int r;
+	GLdouble br;
+	GLdouble tr;
+	GLdouble h;
+	GLUquadricObj * cylinder;
+};
+
+class Disk : public QuadricEntity
+{
+public:
+	Disk(GLdouble intRadio, GLdouble extRadio, int lados, int anillos);
+	virtual void draw();
+private:
+	GLdouble ir;
+	GLdouble or;
+	int l;
+	int r;
+	GLUquadricObj * disk;
+};
+
+class PartialDisk : public QuadricEntity
+{
+public:
+	PartialDisk(GLdouble intRadio, GLdouble extRadio, int lados, int anillos, GLdouble startAngle, GLdouble sweepAngle);
+	virtual void draw();
+private:
+	GLdouble ir;
+	GLdouble or;
+	int l;
+	int r;
+	GLdouble sta;
+	GLdouble swa;
+	GLUquadricObj * pdisk;
+};
+
+class CompoundEntity : public Entity
+{
+public:
+	CompoundEntity(){};
+	virtual void render(glm::dmat4 const& modelViewMat);
+	~CompoundEntity(){
+		for each (Entity* it in entities)
+		{
+			delete it;
+		}
+	};
+	virtual void draw();
+	std::vector<Entity*> entities;
+};
+
+class RevolutionsShpere : public Entity
+{
+public:
+	RevolutionsShpere(int n);
+	~RevolutionsShpere() { };
+	virtual void draw();
+private:
+	int m;
+	int n;
 };
 
 #endif //_H_Entities_H_

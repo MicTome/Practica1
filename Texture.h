@@ -16,7 +16,7 @@ public:
 	void wrap(GLuint wp = GL_CLAMP);
 	void loadColorBuffer(GLsizei width, GLsizei height);
 	void save(const std::string & BMP_Name);
-	void bind();
+	void bind(GLuint = GL_REPLACE);
 	void unbind() { glBindTexture(GL_TEXTURE_2D, 0); };
 protected:
 	GLuint w, h;

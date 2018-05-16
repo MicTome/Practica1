@@ -1,4 +1,6 @@
 #include "Scene.h"
+#include <gtc/matrix_transform.hpp>  
+#include <gtc/type_ptr.hpp>
 
 //-------------------------------------------------------------------------
 
@@ -22,7 +24,7 @@ void Scene::init()
   glLightfv(GL_LIGHT0, GL_AMBIENT, a);
   GLfloat s[] = { 1.0f, 1.0f, 1.0f, 1.0f };
   glLightfv(GL_LIGHT0, GL_SPECULAR, s);
-  GLfloat p[] = { 50.0f, 50.0f, 50.0f, 1.0f };
+  GLfloat p[] = { 500.0f, 500.0f, 500.0f, 1.0f };
   glLightfv(GL_LIGHT0, GL_POSITION, p);
   camera->set3D();
   // textures  
@@ -52,8 +54,37 @@ void Scene::init()
   //objetos.push_back(new GlassPot(100.0, 100.0, 0, 0, 200.0, 50.0, -200.0));
   //objetos.push_back(new Poligon(100.0, 6));
   //objetos.push_back(new MPR(50));
-  objetos.push_back(new Hipotrocoide(20, 400, 7, 4, 2));
+  Hipotrocoide* hipo = new Hipotrocoide(6, 300, 7, 4, 2);//x, 300, 70, 40, 20 (para hacerla grande, pon estos y los que hay en los metodos de la hipomesh
+  objetos.push_back(hipo);
 
+  //BB8
+  //Entidad compuesta de BB8
+  CompoundEntity* robot = new CompoundEntity();
+  //Metemos el robot en los objetos de la escena
+  objetos.push_back(robot);
+  robot->modelMat = glm::rotate(robot->modelMat, glm::radians(-45.0), glm::dvec3(0, 1, 0));
+  //Escala para que coincida dentro de la hipotrocoide en su tamaño original, comentar y escalar con la hipotrocoide en grande
+  robot->modelMat = glm::scale(robot->modelMat, glm::dvec3(0.003, 0.003, 0.003));
+  //Cabeza BB8
+  RevolutionsShpere* cabeza = new RevolutionsShpere(50);
+  //Se le da el color a la pieza
+  cabeza->setColor(1.0, 1.0, 1.0);
+  //Se coloca
+  cabeza->modelMat = glm::translate(cabeza->modelMat, glm::dvec3(0, 80, 0));
+  //Se mete dentr0 de los objetos del robot
+  robot->entities.push_back(cabeza);
+  Sphere* ojo = new Sphere(5.0, 30, 30);
+  ojo->modelMat = glm::translate(ojo->modelMat, glm::dvec3(40, 110, 0));
+  ojo->setColor(0.0, 0.0, 0.0);
+  robot->entities.push_back(ojo);
+  Sphere* ojoGrande = new Sphere(15.0, 30, 30);
+  ojoGrande->modelMat = glm::translate(ojoGrande->modelMat, glm::dvec3(25, 105, 25));
+  ojoGrande->setColor(0.0, 0.0, 0.0);
+  robot->entities.push_back(ojoGrande);
+  //Cuerpo BB8
+  Sphere* cuerpo = new Sphere(90, 30, 30);
+  cuerpo->setColor(1.0, 1.0, 0.75);
+  robot->entities.push_back(cuerpo);
 
   /**
   Los objetos opacos van primero, los semitransparentes o transparentes segundos y por ultimo los translucidos

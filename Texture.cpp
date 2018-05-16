@@ -12,10 +12,10 @@ void Texture::init(){
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 }
 
-void Texture::bind() { // argumento para el modo de mezclar los colores
+void Texture::bind(GLuint gl) { // argumento para el modo de mezclar los colores
 	glBindTexture(GL_TEXTURE_2D, id); // activa la textura
 	// la función de mezcla de colores no queda guardada en el objeto
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, gl);
 	// GL_MODULATE / GL_ADD …
 }
 
