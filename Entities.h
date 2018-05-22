@@ -18,6 +18,7 @@ public:
   void setColor(GLfloat x, GLfloat y, GLfloat z);
   virtual void render(glm::dmat4 const& modelViewMat);
   glm::dmat4 modelMat;
+  Mesh* mesh = nullptr;
 protected:
 	/**
 	Variable para añadir texturas
@@ -27,7 +28,6 @@ protected:
   GLfloat re;
   GLfloat bl;
   GLfloat gr;
-  Mesh* mesh = nullptr;
   
   virtual void draw();
   virtual void setMvM(glm::dmat4 const& modelViewMat);
@@ -258,9 +258,6 @@ private:
 	int nP;
 	int nQ;
 	GLfloat a, b, c;
-	GLfloat res;
-	GLfloat grs;
-	GLfloat bls;
 };
 
 

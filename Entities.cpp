@@ -1,6 +1,7 @@
 ﻿#include "Entities.h"
 #include <gtc/matrix_transform.hpp>  
 #include <gtc/type_ptr.hpp>
+#include <stdio.h>
 
 using namespace glm;
 
@@ -815,7 +816,6 @@ Hipotrocoide::Hipotrocoide(int nP, int nQ, GLfloat a, GLfloat b, GLfloat c) : En
 	bl = 0.0;
 	this->setColor(re, gr, bl);
 	mesh = new HipoMesh(this->nP, this->nQ, this->a, this->b, this->c);
-	
 }
 
 void Hipotrocoide::draw() {

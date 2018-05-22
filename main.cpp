@@ -111,6 +111,10 @@ void key(unsigned char key, int x, int y)
   bool need_redisplay = true;
   //DiaboloTex* dia = scene.getDiaboloTex();
   switch (key) {
+  case 'm':
+	  scene.rotateBody();
+	  scene.moveBB8();
+	  break;
   case 27:  // Escape key 
     glutLeaveMainLoop();  // Freeglut's sentence for stopping glut's main loop 
     break;

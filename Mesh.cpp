@@ -423,8 +423,9 @@ HipoMesh::HipoMesh(int nP, int nQ, GLfloat a, GLfloat b, GLfloat c) : Mesh() {
 	this->nQ = nQ;
 	//vertices totales rodajas por vertices de poligono
 	numVertices = nP * nQ;
-	vertices = new dvec3[numVertices];
-	normals = new dvec3[numVertices];
+	this->vertices = new dvec3[numVertices];
+	this->normals = new dvec3[numVertices];
+	this->vert = new dvec3[numVertices];
 	//crea el poligono que sera la forma de la curva
 	creaBase();
 	GLdouble t = 0.0;
@@ -439,6 +440,7 @@ HipoMesh::HipoMesh(int nP, int nQ, GLfloat a, GLfloat b, GLfloat c) : Mesh() {
 		//*explicacion en el metodo
 		creaRodaja(i);
 	}
+	this->takeVertex(this->vertices);
 }
 
 /**Metodo que crea la base que forma el contorno de la curva
@@ -598,4 +600,8 @@ dvec3 HipoMesh::multiplicar(int i){
 	double z = m[0][2] * base[i].x + m[1][2] * base[i].y + m[2][2] * base[i].z + m[3][2] * 1.0;
 	//double p = m[0][3] * base[i].x + m[1][3] * base[i].y + m[2][3] * base[i].z + m[3][3] * 1.0;
 	return dvec3(x, y, z);
+}
+
+void Mesh::takeVertex(dvec3* v){
+	vertices = v;
 }

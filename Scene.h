@@ -19,9 +19,11 @@ public:
 	  void render();    
 	  Diabolo* getDiabolo();
 	  DiaboloTex* getDiaboloTex();
-	  
+	  void rotateBody();
+	  void moveBB8();
 protected:
 	  Camera* camera;
+	  int move = 0;
 	  std::vector<Entity*> objetos;
 };
 

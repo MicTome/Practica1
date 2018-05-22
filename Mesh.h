@@ -24,6 +24,7 @@ public:
   static Mesh* generateTriPyramidTex(GLdouble r, GLdouble h);
   static Mesh* generatePoligon(GLdouble r, int n);
   static Mesh* generaMallaPorRevolucion(int m, int n, glm::dvec3* perfil);
+  void takeVertex(glm::dvec3* v);
   Mesh(void) { };
   ~Mesh(void);
   virtual void draw();
@@ -56,7 +57,7 @@ public:
 	glm::dvec3 curva(GLdouble t);
 	glm::dvec3 derivada(GLdouble t);
 	glm::dvec3 segundaDerivada(GLdouble t);
-	glm::dvec3 HipoMesh::multiplicar(int i);
+	glm::dvec3 multiplicar(int i);
 	virtual void draw();
 protected:
 	int nP; // Número de lados del polígono que aproxima la circunferencia que define el tubo
@@ -64,6 +65,7 @@ protected:
 	GLfloat a, b, c; // Valores de los parámetros de la ecuación de la hipotrocoide
 	glm::dmat4 m; // Matriz de paso de coordenadas locales a globales
 	glm::dvec3* base; // Perfil del nP-ágono que aproxima la circunferencia que define el tubo
+	glm::dvec3* vert;
 };
 
 //-------------------------------------------------------------------------
