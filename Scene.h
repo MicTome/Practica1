@@ -20,10 +20,13 @@ public:
 	  Diabolo* getDiabolo();
 	  DiaboloTex* getDiaboloTex();
 	  void rotateBody();
+	  void route();
 	  void moveBB8();
 protected:
+	  glm::dvec3* vf;
 	  Camera* camera;
-	  int move = 0;
+	  int move = 0, numL, numR;
+	  int a, b, c;
 	  std::vector<Entity*> objetos;
 };
 

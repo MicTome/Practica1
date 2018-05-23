@@ -64,6 +64,7 @@ Mesh * Mesh::generateAxesRGB(GLdouble l)
  
   return m; 
 }
+
 //-------------------------------------------------------------------------
 
 /**
@@ -514,7 +515,7 @@ void HipoMesh::draw(){
 		// Después del dibujo de los elementos por índices,
 		// se deshabilitan los vertex arrays, como es habitual
 		// Definición de las caras
-		for (int i = 0; i < nQ-1; i++){ // Unir el perfil i-ésimo con el (i+1)%n-ésimo
+		for (int i = 0; i < nQ; i++){ // Unir el perfil i-ésimo con el (i+1)%n-ésimo
 			for (int j = 0; j < nP; j++) { // Esquina inferior-izquierda de una cara
 				int indice = i*nP + j;
 				unsigned int stripIndices[4];
