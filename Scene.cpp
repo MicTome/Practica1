@@ -54,7 +54,7 @@ void Scene::init()
   //objetos.push_back(new GlassPot(100.0, 100.0, 0, 0, 200.0, 50.0, -200.0));
   //objetos.push_back(new Poligon(100.0, 6));
   //objetos.push_back(new MPR(50));
-  numL = 20;
+  numL = 6;
   numR = 252;
   a = 7;
   b = 4;
@@ -185,7 +185,9 @@ void Scene::rotateBody(){
 obtener la ruta a seguir por el objeto
 */
 void Scene::route(){
+	//En vf acaba el valor final de este metodo
 	vf = new glm::dvec3[numR];
+	//Obtengo los vertices de la hipotrocoide
 	glm::dvec3* vert = objetos[1]->mesh->getVertices();
 	glm::dvec3* ve = new glm::dvec3[numR];
 	glm::dvec3* v0 = new glm::dvec3[numR];
@@ -193,6 +195,7 @@ void Scene::route(){
 	
 	int j = 0;
 	int i = 0;
+	//Recorro todos los vectores poligono a poligono cogiendo el vector 0 de esa rodaja y el de la mitad
 	while (i < (numL*numR)){
 		vMit[j] = vert[i + (numL/2)];
 		v0[j] = vert[i];
@@ -200,10 +203,12 @@ void Scene::route(){
 		j++;
 	}
 	i = 0;
+	//Calculo el centro de entre esos dos vertices
 	while (i < numR){
 		ve[i] = (vMit[i] + v0[i]) / 2.0;
 		i++;
 	}
+	//Calculo el vector traslacion entre el vertice actual y el siguiente
 	i = 0;
 	while (i < numR){
 		if (i == numR-1){
