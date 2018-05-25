@@ -499,7 +499,7 @@ void HipoMesh::cargaMatriz(GLdouble t){
 	dvec3 C = curva(t);
 	dvec3 T = glm::normalize(derivada(t));
 	dvec3 B = glm::normalize(cross(derivada(t), segundaDerivada(t)));
-	dvec3 N = cross(T, B);
+	dvec3 N = cross(B,T);
 	m = dmat4(dvec4(N.x, B.x, T.x, C.x), dvec4(N.y, B.y, T.y, C.y), dvec4(N.z, B.z, T.z, C.z), dvec4(0.0, 0.0, 0.0, 1.0));
 }
 /**Esto es lo que se hace en todos los objetos, pero en esta ocasion esta aqui dentro para formar las caras con los for
@@ -566,8 +566,8 @@ void HipoMesh::normalize(){
 		// Por cada cara a la que pertenece el vértice índice,
 		// se determinan 3 índices i0, i1, i2 de 3 vértices consecutivos de esa cara
 		dvec3 aux0 = vertices[indice]; //vértice de i0; dvec3 aux1 = ...; dvec3 aux2 = ...;
-		dvec3 aux1 = vertices[i0];
-		dvec3 aux2 = vertices[i2];
+		dvec3 aux1 = vertices[i2];
+		dvec3 aux2 = vertices[i0];
 		//dvec3 norm = glm::cross(aux1 - aux0, aux2 - aux1);
 		dvec3 norm = glm::cross(aux2 - aux1, aux0 - aux1);
 		normals[indice + 1] += norm;

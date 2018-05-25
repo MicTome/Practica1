@@ -55,52 +55,22 @@ void Scene::init()
   //objetos.push_back(new Poligon(100.0, 6));
   //objetos.push_back(new MPR(50));
   numL = 20;
-  numR = 1000;
+  //Numero de rodajas, 502 para completar una hipotrocoide
+  numR = 502;
   a = 7;
   b = 4;
   c = 2;
-  Hipotrocoide* hipo = new Hipotrocoide(numL, numR, a, b, c);//x, 300, 70, 40, 20 (para hacerla grande, pon estos y los que hay en los metodos de la hipomesh
+  Hipotrocoide* hipo = new Hipotrocoide(numL, numR, a, b, c);
   objetos.push_back(hipo);
-  mat = hipo->mesh->getMatriz();
   //hipo->modelMat = glm::scale(hipo->modelMat, glm::dvec3(30.0, 30.0, 30.0));
+  //Cojo la matriz de la hipotrocoide
+  mat = hipo->mesh->getMatriz();
 
   //BB8
-  //Entidad compuesta de BB8
-  CompoundEntity* robot = new CompoundEntity();
-  //Metemos el robot en los objetos de la escena
-  objetos.push_back(robot);
-  this->moveBB8();
-  //robot->modelMat = glm::translate(robot->modelMat, glm::dvec3(4.8*300.0, -0.13*300.0, 0.97*300.0));
-  
-  //Cabeza BB8
-  RevolutionsShpere* cabeza = new RevolutionsShpere(50);
-  //Se le da el color a la pieza
-  cabeza->setColor(1.0, 1.0, 1.0);
-  //Se coloca
-  cabeza->modelMat = glm::translate(cabeza->modelMat, glm::dvec3(0, 85, 0));
-  //Se mete dentr0 de los objetos del robot
-  robot->entities.push_back(cabeza);
-  Sphere* ojo = new Sphere(5.0, 30, 30);
-  ojo->modelMat = glm::translate(ojo->modelMat, glm::dvec3(47, 100, 10));
-  ojo->setColor(0.0, 0.0, 0.0);
-  robot->entities.push_back(ojo);
-  Sphere* ojoGrande = new Sphere(15.0, 30, 30);
-  ojoGrande->modelMat = glm::translate(ojoGrande->modelMat, glm::dvec3(25, 110, 25));
-  ojoGrande->setColor(0.0, 0.0, 0.0);
-  robot->entities.push_back(ojoGrande);
-  //Cuerpo BB8
-  CompoundEntity* cuerpo = new CompoundEntity();
-  robot->entities.push_back(cuerpo);
-  cuerpo->modelMat = glm::rotate(cuerpo->modelMat, glm::radians(45.0), glm::dvec3(0, 1, 0));
-  Sphere* centro = new Sphere(90.0, 30, 30);
-  centro->setColor(0.96, 0.96, 0.86);
-  cuerpo->entities.push_back(centro);
-  //Esfera para ver si rota el cuerpo
-  Sphere* rotador = new Sphere(20, 30, 30);
-  rotador->setColor(0.0, 0.0, 0.0);
-  rotador->modelMat = glm::translate(rotador->modelMat, glm::dvec3(0, 0, 85));
-  cuerpo->entities.push_back(rotador);
+  this->creaBB8();
 
+  //Mueve el BB8 una vez por la matriz para colocarlo
+  this->moveBB8();
   /**
   Los objetos opacos van primero, los semitransparentes o transparentes segundos y por ultimo los translucidos
   */
@@ -174,10 +144,13 @@ DiaboloTex* Scene::getDiaboloTex(){
 //Rota el cuerpo del objeto 2 (BB8). El cuerpo es la 3º esfera del robot
 void Scene::rotateBody(){
 	CompoundEntity* c = (CompoundEntity*)objetos[2];
-	CompoundEntity* ce = (CompoundEntity*)c->entities[3];
+	CompoundEntity* ce = (CompoundEntity*)c->entities[1];
 	ce->modelMat = glm::rotate(ce->modelMat, glm::radians(7.0), glm::dvec3(1, 0, 0));
 }
 
+/**
+Mueve el BB8 por la hipotrocoide
+*/
 void Scene::moveBB8(){
 	if (move == numR){
 		move = 0;
@@ -194,8 +167,56 @@ void Scene::moveBB8(){
 	aux[2][3] = 0.0;
 
 	bb->modelMat = aux;
-	bb->modelMat = glm::scale(bb->modelMat, glm::dvec3(1.0, -1.0, 1.0));
-	bb->modelMat = glm::scale(bb->modelMat, glm::dvec3(0.003, 0.003, 0.003));
-	bb->modelMat = glm::rotate(bb->modelMat, glm::radians(-90.0), glm::dvec3(0, 1, 0));
+	//Los valores en negativo hacen que en x, mire hacia la izquierda y en y, deje de estar boca abajo
+	bb->modelMat = glm::scale(bb->modelMat, glm::dvec3(-0.003, -0.003, 0.003));
+	//bb->modelMat = glm::scale(bb->modelMat, glm::dvec3(-1.0, -1.0, 1.0));
+	bb->modelMat = glm::rotate(bb->modelMat, glm::radians(-45.0), glm::dvec3(0, 1, 0));
 	move++;
+}
+
+/**
+Metodo que crea un BB8
+*/
+void Scene::creaBB8(){
+
+	//Entidad compuesta de BB8
+	CompoundEntity* robot = new CompoundEntity();
+	//Metemos el robot en los objetos de la escena
+	objetos.push_back(robot);
+	//robot->modelMat = glm::translate(robot->modelMat, glm::dvec3(4.8*300.0, -0.13*300.0, 0.97*300.0));
+
+	//Cabeza BB8
+	//Para las entidades compuestas siempre se hace lo siguiente. Se crea una
+	CompoundEntity* cabeza = new CompoundEntity();
+	//Se introduce dentro del vector de su contenedor (en este caso robot), como se hace con robot en los objetos de Scene
+	robot->entities.push_back(cabeza);
+	//Se hacen las transformaciones pertinentes al objeto compuesto
+	cabeza->modelMat = glm::translate(cabeza->modelMat, glm::dvec3(0, 85, 0));
+	//Cramos un objeto que pertenece a la entidad compuesta (cabeza)
+	RevolutionsShpere* baseCabeza = new RevolutionsShpere(50);
+	//Se le da el color a la pieza
+	baseCabeza->setColor(1.0, 1.0, 1.0);
+	//Se mete dentro de los objetos de la cabeza. Si se necesita hacer una transformacion, se hace antes de meterla en los objetos
+	cabeza->entities.push_back(baseCabeza);
+	Sphere* ojo = new Sphere(5.0, 30, 30);
+	ojo->modelMat = glm::translate(ojo->modelMat, glm::dvec3(43, 23, 12));
+	ojo->setColor(0.0, 0.0, 0.0);
+	cabeza->entities.push_back(ojo);
+	Sphere* ojoGrande = new Sphere(15.0, 30, 30);
+	ojoGrande->modelMat = glm::translate(ojoGrande->modelMat, glm::dvec3(20, 30, 25));
+	ojoGrande->setColor(0.0, 0.0, 0.0);
+	cabeza->entities.push_back(ojoGrande);
+
+	//Cuerpo BB8
+	CompoundEntity* cuerpo = new CompoundEntity();
+	robot->entities.push_back(cuerpo);
+	cuerpo->modelMat = glm::rotate(cuerpo->modelMat, glm::radians(45.0), glm::dvec3(0, 1, 0));
+	Sphere* centro = new Sphere(90.0, 30, 30);
+	centro->setColor(0.96, 0.96, 0.4); //Difiere del color beige (0.96,0.96,0.86) para que se aprecie mas en pequeño
+	cuerpo->entities.push_back(centro);
+	//Esfera para ver si rota el cuerpo
+	Sphere* rotador = new Sphere(20, 30, 30);
+	rotador->setColor(0.0, 0.0, 0.0);
+	rotador->modelMat = glm::translate(rotador->modelMat, glm::dvec3(0, 0, 85));
+	cuerpo->entities.push_back(rotador);
 }

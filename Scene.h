@@ -21,6 +21,8 @@ public:
 	  DiaboloTex* getDiaboloTex();
 	  void rotateBody();
 	  void moveBB8();
+	  void creaBB8();
+	  void inclinaCabeza();
 protected:
 	  glm::dvec3* vf;
 	  std::vector<glm::dmat4> mat;
