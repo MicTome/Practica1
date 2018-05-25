@@ -4,6 +4,7 @@
 
 #include <GL/freeglut.h>
 #include <glm.hpp>
+#include <vector>
 
 //-------------------------------------------------------------------------
 
@@ -24,7 +25,8 @@ public:
   static Mesh* generateTriPyramidTex(GLdouble r, GLdouble h);
   static Mesh* generatePoligon(GLdouble r, int n);
   static Mesh* generaMallaPorRevolucion(int m, int n, glm::dvec3* perfil);
-  void takeVertex(glm::dvec3* v);
+  void setMatriz(int i, glm::dmat4 m);
+  std::vector<glm::dmat4> getMatriz();
   Mesh(void) { };
   ~Mesh(void);
   virtual void draw();
@@ -39,6 +41,7 @@ protected:
    glm::dvec3* vertices = nullptr;
    glm::dvec3* normals = nullptr;
    glm::dvec4* colors = nullptr;
+   std::vector<glm::dmat4> matriz;
    /**
    Variable necesaria para poder añadir texturas a los objetos
    */
@@ -65,7 +68,6 @@ protected:
 	GLfloat a, b, c; // Valores de los parámetros de la ecuación de la hipotrocoide
 	glm::dmat4 m; // Matriz de paso de coordenadas locales a globales
 	glm::dvec3* base; // Perfil del nP-ágono que aproxima la circunferencia que define el tubo
-	glm::dvec3* vert;
 };
 
 //-------------------------------------------------------------------------

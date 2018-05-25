@@ -54,25 +54,23 @@ void Scene::init()
   //objetos.push_back(new GlassPot(100.0, 100.0, 0, 0, 200.0, 50.0, -200.0));
   //objetos.push_back(new Poligon(100.0, 6));
   //objetos.push_back(new MPR(50));
-  numL = 6;
-  numR = 252;
+  numL = 20;
+  numR = 1000;
   a = 7;
   b = 4;
   c = 2;
   Hipotrocoide* hipo = new Hipotrocoide(numL, numR, a, b, c);//x, 300, 70, 40, 20 (para hacerla grande, pon estos y los que hay en los metodos de la hipomesh
   objetos.push_back(hipo);
+  mat = hipo->mesh->getMatriz();
   //hipo->modelMat = glm::scale(hipo->modelMat, glm::dvec3(30.0, 30.0, 30.0));
-  this->route();
+
   //BB8
   //Entidad compuesta de BB8
   CompoundEntity* robot = new CompoundEntity();
   //Metemos el robot en los objetos de la escena
   objetos.push_back(robot);
-  //robot->modelMat = glm::rotate(robot->modelMat, glm::radians(-45.0), glm::dvec3(0, 1, 0));
-
-  //Escala para que coincida dentro de la hipotrocoide en su tamaño original, comentar y escalar con la hipotrocoide en grande
-  robot->modelMat = glm::scale(robot->modelMat, glm::dvec3(0.003, 0.003, 0.003));
-  robot->modelMat = glm::translate(robot->modelMat, glm::dvec3(4.8*300.0, -0.13*300.0, 0.97*300.0));
+  this->moveBB8();
+  //robot->modelMat = glm::translate(robot->modelMat, glm::dvec3(4.8*300.0, -0.13*300.0, 0.97*300.0));
   
   //Cabeza BB8
   RevolutionsShpere* cabeza = new RevolutionsShpere(50);
@@ -83,7 +81,7 @@ void Scene::init()
   //Se mete dentr0 de los objetos del robot
   robot->entities.push_back(cabeza);
   Sphere* ojo = new Sphere(5.0, 30, 30);
-  ojo->modelMat = glm::translate(ojo->modelMat, glm::dvec3(50, 100, 10));
+  ojo->modelMat = glm::translate(ojo->modelMat, glm::dvec3(47, 100, 10));
   ojo->setColor(0.0, 0.0, 0.0);
   robot->entities.push_back(ojo);
   Sphere* ojoGrande = new Sphere(15.0, 30, 30);
@@ -180,56 +178,24 @@ void Scene::rotateBody(){
 	ce->modelMat = glm::rotate(ce->modelMat, glm::radians(7.0), glm::dvec3(1, 0, 0));
 }
 
-
-/**Metodo para calcular el punto intermedio de los vertices de la hipotrocoide y sirve para 
-obtener la ruta a seguir por el objeto
-*/
-void Scene::route(){
-	//En vf acaba el valor final de este metodo
-	vf = new glm::dvec3[numR];
-	//Obtengo los vertices de la hipotrocoide
-	glm::dvec3* vert = objetos[1]->mesh->getVertices();
-	glm::dvec3* ve = new glm::dvec3[numR];
-	glm::dvec3* v0 = new glm::dvec3[numR];
-	glm::dvec3* vMit = new glm::dvec3[numR];
-	
-	int j = 0;
-	int i = 0;
-	//Recorro todos los vectores poligono a poligono cogiendo el vector 0 de esa rodaja y el de la mitad
-	while (i < (numL*numR)){
-		vMit[j] = vert[i + (numL/2)];
-		v0[j] = vert[i];
-		i += numL;
-		j++;
-	}
-	i = 0;
-	//Calculo el centro de entre esos dos vertices
-	while (i < numR){
-		ve[i] = (vMit[i] + v0[i]) / 2.0;
-		i++;
-	}
-	//Calculo el vector traslacion entre el vertice actual y el siguiente
-	i = 0;
-	while (i < numR){
-		if (i == numR-1){
-			vf[i].x = ve[0].x - ve[i].x;
-			vf[i].y = ve[0].y - ve[i].y;
-			vf[i].z = ve[0].z - ve[i].z;
-		}
-		else{
-			vf[i].x = ve[i + 1].x - ve[i].x;
-			vf[i].y = ve[i + 1].y - ve[i].y;
-			vf[i].z = ve[i + 1].z - ve[i].z;
-		}
-	i++;
-	}
-}
-
 void Scene::moveBB8(){
-	if (move >= numR){
+	if (move == numR){
 		move = 0;
 	}
 	CompoundEntity* bb = (CompoundEntity*)objetos[2];
-	bb->modelMat = glm::translate(bb->modelMat, glm::dvec3(vf[move].x*330.0, vf[move].y*330.0, vf[move].z*330.0));
+	glm::dmat4 aux =(mat.at(move));
+	//Cambio la ultima fila por la curva (en X 3 en la matriz)
+	aux[3][0] = aux[0][3];
+	aux[3][1] = aux[1][3];
+	aux[3][2] = aux[2][3];
+
+	aux[0][3] = 0.0;
+	aux[1][3] = 0.0;
+	aux[2][3] = 0.0;
+
+	bb->modelMat = aux;
+	bb->modelMat = glm::scale(bb->modelMat, glm::dvec3(1.0, -1.0, 1.0));
+	bb->modelMat = glm::scale(bb->modelMat, glm::dvec3(0.003, 0.003, 0.003));
+	bb->modelMat = glm::rotate(bb->modelMat, glm::radians(-90.0), glm::dvec3(0, 1, 0));
 	move++;
 }

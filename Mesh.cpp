@@ -426,7 +426,6 @@ HipoMesh::HipoMesh(int nP, int nQ, GLfloat a, GLfloat b, GLfloat c) : Mesh() {
 	numVertices = nP * nQ;
 	this->vertices = new dvec3[numVertices];
 	this->normals = new dvec3[numVertices];
-	this->vert = new dvec3[numVertices];
 	//crea el poligono que sera la forma de la curva
 	creaBase();
 	GLdouble t = 0.0;
@@ -434,14 +433,15 @@ HipoMesh::HipoMesh(int nP, int nQ, GLfloat a, GLfloat b, GLfloat c) : Mesh() {
 	cargaMatriz(t);
 	//generacion de primeros vertices de la curva a partir de la base
 	creaVerticesIniciales();
-	GLdouble saltoEntreRodajas = 0.5;//0.1
+	this->setMatriz(0, m);
+	GLdouble saltoEntreRodajas = 0.05;//0.1
 	for (int i = 0; i<nQ; i++) {
 		t += saltoEntreRodajas;
 		cargaMatriz(t);
+		this->setMatriz(i, m);
 		//*explicacion en el metodo
 		creaRodaja(i);
 	}
-	this->takeVertex(this->vertices);
 }
 
 /**Metodo que crea la base que forma el contorno de la curva
@@ -500,7 +500,7 @@ void HipoMesh::cargaMatriz(GLdouble t){
 	dvec3 T = glm::normalize(derivada(t));
 	dvec3 B = glm::normalize(cross(derivada(t), segundaDerivada(t)));
 	dvec3 N = cross(T, B);
-	m = dmat4(dvec4(N, 0.0), dvec4(B, 0.0), dvec4(T, 0.0), dvec4(C, 1.0));
+	m = dmat4(dvec4(N.x, B.x, T.x, C.x), dvec4(N.y, B.y, T.y, C.y), dvec4(N.z, B.z, T.z, C.z), dvec4(0.0, 0.0, 0.0, 1.0));
 }
 /**Esto es lo que se hace en todos los objetos, pero en esta ocasion esta aqui dentro para formar las caras con los for
 Se usa una version disntita a la mencionada por el profesor y que esta comentada mas arriba
@@ -596,13 +596,17 @@ dvec3 HipoMesh::segundaDerivada(GLdouble t){
 Multiplica de forma vertical, es decir, todas las x de la matriz por la base para el valor x. Lo mismo para y y z
 */
 dvec3 HipoMesh::multiplicar(int i){
-	double x = m[0][0] * base[i].x + m[1][0] * base[i].y + m[2][0] * base[i].z + m[3][0] * 1.0;
-	double y = m[0][1] * base[i].x + m[1][1] * base[i].y + m[2][1] * base[i].z + m[3][1] * 1.0;
-	double z = m[0][2] * base[i].x + m[1][2] * base[i].y + m[2][2] * base[i].z + m[3][2] * 1.0;
+	double x = m[0][0] * base[i].x + m[0][1] * base[i].y + m[0][2] * base[i].z + m[0][3] * 1.0;
+	double y = m[1][0] * base[i].x + m[1][1] * base[i].y + m[1][2] * base[i].z + m[1][3] * 1.0;
+	double z = m[2][0] * base[i].x + m[2][1] * base[i].y + m[2][2] * base[i].z + m[2][3] * 1.0;
 	//double p = m[0][3] * base[i].x + m[1][3] * base[i].y + m[2][3] * base[i].z + m[3][3] * 1.0;
 	return dvec3(x, y, z);
 }
 
-void Mesh::takeVertex(dvec3* v){
-	vertices = v;
+void Mesh::setMatriz(int i, glm::dmat4 m){
+	matriz.push_back(m);
+}
+
+std::vector<glm::dmat4> Mesh::getMatriz(){
+	return matriz;
 }

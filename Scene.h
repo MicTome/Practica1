@@ -20,10 +20,10 @@ public:
 	  Diabolo* getDiabolo();
 	  DiaboloTex* getDiaboloTex();
 	  void rotateBody();
-	  void route();
 	  void moveBB8();
 protected:
 	  glm::dvec3* vf;
+	  std::vector<glm::dmat4> mat;
 	  Camera* camera;
 	  int move = 0, numL, numR;
 	  int a, b, c;
