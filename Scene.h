@@ -27,6 +27,7 @@ protected:
 	  glm::dvec3* vf;
 	  std::vector<glm::dmat4> mat;
 	  Camera* camera;
+	  GLdouble scaleFactor = 1.0;
 	  int move = 0, numL, numR;
 	  int a, b, c;
 	  std::vector<Entity*> objetos;

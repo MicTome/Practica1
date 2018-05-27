@@ -10,7 +10,6 @@ void Scene::init()
   glClearColor(1.0, 1.0, 1.0, 1.0);  // background color (alpha=1 -> opaque)
   glEnable(GL_DEPTH_TEST);  
 
-  
   //camera->setAZ();
     
   // lights
@@ -60,12 +59,13 @@ void Scene::init()
   a = 7;
   b = 4;
   c = 2;
+  //Permite escalar la hipotrocoide y adaptar el bb8 a la misma. Solo es necesario modificar esta variable
+  scaleFactor = 50.0;
   Hipotrocoide* hipo = new Hipotrocoide(numL, numR, a, b, c);
   objetos.push_back(hipo);
-  //hipo->modelMat = glm::scale(hipo->modelMat, glm::dvec3(30.0, 30.0, 30.0));
+  hipo->modelMat = glm::scale(hipo->modelMat, glm::dvec3(scaleFactor, scaleFactor, scaleFactor));
   //Cojo la matriz de la hipotrocoide
   mat = hipo->mesh->getMatriz();
-
   //BB8
   this->creaBB8();
 
@@ -158,17 +158,17 @@ void Scene::moveBB8(){
 	CompoundEntity* bb = (CompoundEntity*)objetos[2];
 	glm::dmat4 aux =(mat.at(move));
 	//Cambio la ultima fila por la curva (en X 3 en la matriz)
-	aux[3][0] = aux[0][3];
-	aux[3][1] = aux[1][3];
-	aux[3][2] = aux[2][3];
+	aux[3][0] = aux[0][3] * scaleFactor;
+	aux[3][1] = aux[1][3] * scaleFactor;
+	aux[3][2] = aux[2][3] * scaleFactor;
 
 	aux[0][3] = 0.0;
 	aux[1][3] = 0.0;
 	aux[2][3] = 0.0;
-
+	GLdouble factor = 1.0/ (300.0 / scaleFactor);
 	bb->modelMat = aux;
 	//Los valores en negativo hacen que en x, mire hacia la izquierda y en y, deje de estar boca abajo
-	bb->modelMat = glm::scale(bb->modelMat, glm::dvec3(-0.003, -0.003, 0.003));
+	bb->modelMat = glm::scale(bb->modelMat, glm::dvec3(-factor, -factor, factor));
 	//bb->modelMat = glm::scale(bb->modelMat, glm::dvec3(-1.0, -1.0, 1.0));
 	bb->modelMat = glm::rotate(bb->modelMat, glm::radians(-45.0), glm::dvec3(0, 1, 0));
 	move++;
@@ -212,7 +212,7 @@ void Scene::creaBB8(){
 	robot->entities.push_back(cuerpo);
 	cuerpo->modelMat = glm::rotate(cuerpo->modelMat, glm::radians(45.0), glm::dvec3(0, 1, 0));
 	Sphere* centro = new Sphere(90.0, 30, 30);
-	centro->setColor(0.96, 0.96, 0.4); //Difiere del color beige (0.96,0.96,0.86) para que se aprecie mas en pequeño
+	centro->setColor(0.96, 0.96, 0.6); //Difiere del color beige (0.96,0.96,0.86) para que se aprecie mas en pequeño
 	cuerpo->entities.push_back(centro);
 	//Esfera para ver si rota el cuerpo
 	Sphere* rotador = new Sphere(20, 30, 30);

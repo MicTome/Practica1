@@ -1,5 +1,7 @@
 #include "Mesh.h"
 #include "Math.h"
+//GL_RESCALE_NORMAL no era un valor del enumerado, por lo que tuve que definirlo
+#define GL_RESCALE_NORMAL 0x803A
 
 using namespace glm;
 
@@ -512,6 +514,8 @@ void HipoMesh::draw(){
 		glVertexPointer(3, GL_DOUBLE, 0, vertices);
 		glEnableClientState(GL_NORMAL_ARRAY);
 		glNormalPointer(GL_DOUBLE, 0, normals);
+		//Activa el escalado de las normales
+		glEnable(GL_RESCALE_NORMAL);
 		// Después del dibujo de los elementos por índices,
 		// se deshabilitan los vertex arrays, como es habitual
 		// Definición de las caras
