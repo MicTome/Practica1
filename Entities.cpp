@@ -31,6 +31,20 @@ void Entity::setColor(GLfloat x, GLfloat y, GLfloat z)
 	bl = z;
 }
 
+Mesh* Entity::getMesh()
+{
+	return mesh;
+}
+
+glm::dmat4 Entity::getModelMat()
+{
+	return modelMat;
+}
+
+void Entity::setModelMat(dmat4 a)
+{
+	modelMat = a;
+}
 //-------------------------------------------------------------------------
 
 void Entity::setMvM(dmat4 const& modelViewMat)

@@ -17,9 +17,12 @@ public:
   virtual ~Entity() { delete mesh; };
   void setColor(GLfloat x, GLfloat y, GLfloat z);
   virtual void render(glm::dmat4 const& modelViewMat);
-  glm::dmat4 modelMat;
-  Mesh* mesh = nullptr;
+  glm::dmat4 getModelMat();
+  void setModelMat(glm::dmat4 a);
+  Mesh* getMesh();
 protected:
+	glm::dmat4 modelMat;
+	Mesh* mesh = nullptr;
 	/**
 	Variable para añadir texturas
 	*/

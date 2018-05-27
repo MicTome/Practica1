@@ -30,6 +30,7 @@ protected:
 	  GLdouble scaleFactor = 1.0;
 	  int move = 0, numL, numR;
 	  int a, b, c;
+	  bool inclinar = false;
 	  std::vector<Entity*> objetos;
 };
 
